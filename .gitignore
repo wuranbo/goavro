@@ -1,1 +1,6 @@
 *.test
+tags
+*.pyc
+*.pyo
+*.swp
+py/avro/.ropeproject/
