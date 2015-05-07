@@ -21,7 +21,7 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"github.com/linkedin/goavro"
+	"github.com/wuranbo/goavro"
 	"io"
 	"log"
 )

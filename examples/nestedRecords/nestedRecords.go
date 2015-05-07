@@ -21,7 +21,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/linkedin/goavro"
+	"github.com/wuranbo/goavro"
 	"log"
 )
 

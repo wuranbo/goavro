@@ -20,7 +20,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/linkedin/goavro"
+	"github.com/wuranbo/goavro"
 	"log"
 	"net"
 )

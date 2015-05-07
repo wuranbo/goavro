@@ -22,7 +22,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/linkedin/goavro"
+	"github.com/wuranbo/goavro"
 )
 
 const recordSchema = `

@@ -20,7 +20,7 @@ package main
 
 import (
 	"bytes"
-	"github.com/linkedin/goavro"
+	"github.com/wuranbo/goavro"
 	"log"
 )
 
