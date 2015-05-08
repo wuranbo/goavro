@@ -98,7 +98,7 @@ class DataFileWriter(object):
     else:
       # open writer for reading to collect metadata
       dfr = DataFileReader(writer, io.DatumReader())
-      
+
       # TODO(hammer): collect arbitrary metadata
       # collect metadata
       self._sync_marker = dfr.sync_marker
@@ -179,7 +179,7 @@ class DataFileWriter(object):
 
       # Write block
       self.writer.write(compressed_data)
-      
+
       # Write CRC32 checksum for Snappy
       if self.get_meta(CODEC_KEY) == 'snappy':
         self.encoder.write_crc32(uncompressed_data)
@@ -188,7 +188,7 @@ class DataFileWriter(object):
       self.writer.write(self.sync_marker)
 
       # reset buffer
-      self.buffer_writer.truncate(0) 
+      self.buffer_writer.truncate(0)
       self.block_count = 0
 
   def append(self, datum):
@@ -228,7 +228,7 @@ class DataFileReader(object):
     self._raw_decoder = io.BinaryDecoder(reader)
     self._datum_decoder = None # Maybe reset at every block.
     self._datum_reader = datum_reader
-    
+
     # read the header: magic, meta, sync
     self._read_header()
 
@@ -282,17 +282,20 @@ class DataFileReader(object):
     Get file length and leave file cursor where we found it.
     """
     remember_pos = self.reader.tell()
+    print "remember_pos", str(remember_pos)
     self.reader.seek(0, 2)
     file_length = self.reader.tell()
     self.reader.seek(remember_pos)
     return file_length
 
   def is_EOF(self):
+    print "self.file_length:", self.file_length
+    print "self.tell():", self.reader.tell()
     return self.reader.tell() == self.file_length
 
   def _read_header(self):
     # seek to the beginning of the file to get magic block
-    self.reader.seek(0, 0) 
+    self.reader.seek(0, 0)
 
     # read header into a dict
     header = self.datum_reader.read_data(
@@ -340,6 +343,8 @@ class DataFileReader(object):
     return True. Otherwise, seek back to where we started and return False.
     """
     proposed_sync_marker = self.reader.read(SYNC_SIZE)
+    print "proposed_sync_marker:", proposed_sync_marker
+    print "self.sync_marker:", self.sync_marker
     if proposed_sync_marker != self.sync_marker:
       self.reader.seek(-SYNC_SIZE, 1)
       return False
@@ -350,16 +355,22 @@ class DataFileReader(object):
   # TODO(hammer): clean this up with recursion
   def next(self):
     """Return the next datum in the file."""
+    print "reader in next self.block_count:", str(self.block_count)
+    print "reader in next self.is_EOF():", str(self.is_EOF())
     if self.block_count == 0:
       if self.is_EOF():
+        print "reader in next in branch is_EOF()"
         raise StopIteration
       elif self._skip_sync():
+        print "reader in next in breadn #######self._skip_sync()#####"
         if self.is_EOF(): raise StopIteration
+        print "reader in next in self._skip_sync(): ########still not stop"
         self._read_block_header()
       else:
+        print "reader in next branch ######else####"
         self._read_block_header()
 
-    datum = self.datum_reader.read(self.datum_decoder) 
+    datum = self.datum_reader.read(self.datum_decoder)
     self.block_count -= 1
     return datum
 
