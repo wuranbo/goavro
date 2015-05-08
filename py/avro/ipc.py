@@ -5,9 +5,9 @@
 # to you under the Apache License, Version 2.0 (the
 # "License"); you may not use this file except in compliance
 # with the License.  You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,52 +22,11 @@ try:
 except ImportError:
   from StringIO import StringIO
 from avro import io
-from avro import protocol
 from avro import schema
 
 #
 # Constants
 #
-
-# Handshake schema is pulled in during build
-HANDSHAKE_REQUEST_SCHEMA = schema.parse("""
-{
-    "type": "record",
-    "name": "HandshakeRequest", "namespace":"org.apache.avro.ipc",
-    "fields": [
-        {"name": "clientHash",
-	 "type": {"type": "fixed", "name": "MD5", "size": 16}},
-        {"name": "clientProtocol", "type": ["null", "string"]},
-        {"name": "serverHash", "type": "MD5"},
- 	{"name": "meta", "type": ["null", {"type": "map", "values": "bytes"}]}
- ]
-}
-
-""")
-
-HANDSHAKE_RESPONSE_SCHEMA = schema.parse("""
-{
-    "type": "record",
-    "name": "HandshakeResponse", "namespace": "org.apache.avro.ipc",
-    "fields": [
-        {"name": "match",
-         "type": {"type": "enum", "name": "HandshakeMatch",
-                  "symbols": ["BOTH", "CLIENT", "NONE"]}},
-        {"name": "serverProtocol",
-         "type": ["null", "string"]},
-        {"name": "serverHash",
-         "type": ["null", {"type": "fixed", "name": "MD5", "size": 16}]},
- 	{"name": "meta",
-         "type": ["null", {"type": "map", "values": "bytes"}]}
-    ]
-}
-
-""")
-
-HANDSHAKE_REQUESTOR_WRITER = io.DatumWriter(HANDSHAKE_REQUEST_SCHEMA)
-HANDSHAKE_REQUESTOR_READER = io.DatumReader(HANDSHAKE_RESPONSE_SCHEMA)
-HANDSHAKE_RESPONDER_WRITER = io.DatumWriter(HANDSHAKE_RESPONSE_SCHEMA)
-HANDSHAKE_RESPONDER_READER = io.DatumReader(HANDSHAKE_REQUEST_SCHEMA)
 
 META_SCHEMA = schema.parse('{"type": "map", "values": "bytes"}')
 META_WRITER = io.DatumWriter(META_SCHEMA)
@@ -106,7 +65,7 @@ class BaseRequestor(object):
   def __init__(self, local_protocol, transceiver):
     self._local_protocol = local_protocol
     self._transceiver = transceiver
-    self._remote_protocol = None
+    self._remote_protocol = local_protocol
     self._remote_hash = None
     self._send_protocol = None
 
@@ -156,7 +115,6 @@ class BaseRequestor(object):
     request_datum['serverHash'] = remote_hash
     if self.send_protocol:
       request_datum['clientProtocol'] = str(self.local_protocol)
-    HANDSHAKE_REQUESTOR_WRITER.write(request_datum, encoder)
 
   def write_call_request(self, message_name, request_datum, encoder):
     """
@@ -184,29 +142,8 @@ class BaseRequestor(object):
     datum_writer.write(request_datum, encoder)
 
   def read_handshake_response(self, decoder):
-    handshake_response = HANDSHAKE_REQUESTOR_READER.read(decoder)
-    match = handshake_response.get('match')
-    if match == 'BOTH':
       self.send_protocol = False
       return True
-    elif match == 'CLIENT':
-      if self.send_protocol:
-        raise schema.AvroException('Handshake failure.')
-      self.remote_protocol = protocol.parse(
-                             handshake_response.get('serverProtocol'))
-      self.remote_hash = handshake_response.get('serverHash')
-      self.send_protocol = False
-      return True
-    elif match == 'NONE':
-      if self.send_protocol:
-        raise schema.AvroException('Handshake failure.')
-      self.remote_protocol = protocol.parse(
-                             handshake_response.get('serverProtocol'))
-      self.remote_hash = handshake_response.get('serverHash')
-      self.send_protocol = True
-      return False
-    else:
-      raise schema.AvroException('Unexpected match: %s' % match)
 
   def read_call_response(self, message_name, decoder):
     """
@@ -215,7 +152,7 @@ class BaseRequestor(object):
       * a one-byte error flag boolean, followed by either:
         o if the error flag is false,
           the message response, serialized per the message's response schema.
-        o if the error flag is true, 
+        o if the error flag is true,
           the error, serialized per the message's error union schema.
     """
     # response metadata
@@ -293,11 +230,11 @@ class Responder(object):
     buffer_encoder = io.BinaryEncoder(buffer_writer)
     error = None
     response_metadata = {}
-    
+
     try:
       remote_protocol = self.process_handshake(buffer_decoder, buffer_encoder)
       # handshake failure
-      if remote_protocol is None:  
+      if remote_protocol is None:
         return buffer_writer.getvalue()
 
       # read request using remote protocol
@@ -345,35 +282,13 @@ class Responder(object):
     return buffer_writer.getvalue()
 
   def process_handshake(self, decoder, encoder):
-    handshake_request = HANDSHAKE_RESPONDER_READER.read(decoder)
-    handshake_response = {}
-
     # determine the remote protocol
-    client_hash = handshake_request.get('clientHash')
-    client_protocol = handshake_request.get('clientProtocol')
+    client_hash = self._local_hash
     remote_protocol = self.get_protocol_cache(client_hash)
-    if remote_protocol is None and client_protocol is not None:
-      remote_protocol = protocol.parse(client_protocol)
-      self.set_protocol_cache(client_hash, remote_protocol)
 
     # evaluate remote's guess of the local protocol
-    server_hash = handshake_request.get('serverHash')
-    if self.local_hash == server_hash:
-      if remote_protocol is None:
-        handshake_response['match'] = 'NONE'
-      else:
-        handshake_response['match'] = 'BOTH'
-    else:
-      if remote_protocol is None:
-        handshake_response['match'] = 'NONE'
-      else:
-        handshake_response['match'] = 'CLIENT'
+    # delete the codes....
 
-    if handshake_response['match'] != 'BOTH':
-      handshake_response['serverProtocol'] = str(self.local_protocol)
-      handshake_response['serverHash'] = self.local_hash
-
-    HANDSHAKE_RESPONDER_WRITER.write(handshake_response, encoder)
     return remote_protocol
 
   def invoke(self, local_message, request):
@@ -450,6 +365,7 @@ class FramedWriter(object):
 
   def write_buffer(self, chunk):
     buffer_length = len(chunk)
+
     self.write_buffer_length(buffer_length)
     self.writer.write(chunk)
 
