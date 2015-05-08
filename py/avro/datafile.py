@@ -282,15 +282,15 @@ class DataFileReader(object):
     Get file length and leave file cursor where we found it.
     """
     remember_pos = self.reader.tell()
-    print "remember_pos", str(remember_pos)
+    # print "remember_pos", str(remember_pos)
     self.reader.seek(0, 2)
     file_length = self.reader.tell()
     self.reader.seek(remember_pos)
     return file_length
 
   def is_EOF(self):
-    print "self.file_length:", self.file_length
-    print "self.tell():", self.reader.tell()
+    # print "self.file_length:", self.file_length
+    # print "self.tell():", self.reader.tell()
     return self.reader.tell() == self.file_length
 
   def _read_header(self):
@@ -343,8 +343,8 @@ class DataFileReader(object):
     return True. Otherwise, seek back to where we started and return False.
     """
     proposed_sync_marker = self.reader.read(SYNC_SIZE)
-    print "proposed_sync_marker:", proposed_sync_marker
-    print "self.sync_marker:", self.sync_marker
+    # print "proposed_sync_marker:", proposed_sync_marker
+    # print "self.sync_marker:", self.sync_marker
     if proposed_sync_marker != self.sync_marker:
       self.reader.seek(-SYNC_SIZE, 1)
       return False
@@ -355,19 +355,19 @@ class DataFileReader(object):
   # TODO(hammer): clean this up with recursion
   def next(self):
     """Return the next datum in the file."""
-    print "reader in next self.block_count:", str(self.block_count)
-    print "reader in next self.is_EOF():", str(self.is_EOF())
+    # print "reader in next self.block_count:", str(self.block_count)
+    # print "reader in next self.is_EOF():", str(self.is_EOF())
     if self.block_count == 0:
       if self.is_EOF():
-        print "reader in next in branch is_EOF()"
+        # print "reader in next in branch is_EOF()"
         raise StopIteration
       elif self._skip_sync():
-        print "reader in next in breadn #######self._skip_sync()#####"
+        # print "reader in next in breadn #######self._skip_sync()#####"
         if self.is_EOF(): raise StopIteration
-        print "reader in next in self._skip_sync(): ########still not stop"
+        # print "reader in next in self._skip_sync(): ########still not stop"
         self._read_block_header()
       else:
-        print "reader in next branch ######else####"
+        # print "reader in next branch ######else####"
         self._read_block_header()
 
     datum = self.datum_reader.read(self.datum_decoder)
