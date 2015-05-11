@@ -1,5 +1,10 @@
 # goavro
 
+## 变动
+
+* 修改了一个基于能和apache/avro python的1.7.7版本的简化ipc，去掉了握手的过程。
+* 根据简化的py的ipc添加了go的ipc, 例子在 example/ipc中
+
 ## Description
 
 Goavro is a golang library that implements encoding and decoding of

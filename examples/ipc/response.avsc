@@ -1,0 +1,23 @@
+{
+  "namespace": "example",
+  "type": "record",
+  "name": "Response",
+  "fields": [
+    {
+      "name": "messages",
+      "type": "array",
+      "items": {
+        "namespace": "example",
+        "type": "record",
+        "name": "RespMessage",
+        "fields": [
+          {"name": "to",   "type": "string"},
+          {"name": "from", "type": "string"},
+          {"name": "respbody", "type": "string"}
+        ]
+      }
+    }
+  ]
+}
+
+

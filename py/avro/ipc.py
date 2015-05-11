@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -40,7 +41,7 @@ REMOTE_PROTOCOLS = {}
 
 BIG_ENDIAN_INT_STRUCT = io.struct_class('!I')
 BUFFER_HEADER_LENGTH = 4
-BUFFER_SIZE = 8192
+BUFFER_SIZE = 64 * 2 ** 20
 
 #
 # Exceptions
@@ -126,6 +127,8 @@ class BaseRequestor(object):
     """
     # request metadata (not yet implemented)
     request_metadata = {}
+    # BUG(wu.ranbo@yottabyte.cn) :暂时不追查，因为我们可以写死。
+    # 这里应该是py实现和goavro实现不一致：py中读一个空的meta会当做两个byte的00来读，写meta会当做一个byte的00去写。goavro里go的实现用metaCodec写空的meta会写出两个00byte，读会只读一个00byte。
     META_WRITER.write(request_metadata, encoder)
 
     # message name
@@ -336,10 +339,10 @@ class FramedReader(object):
       message.append(buffer.getvalue())
 
   def _read_buffer_length(self):
-    read = self.reader.read(BUFFER_HEADER_LENGTH)
-    if read == '':
+    _read = self.reader.read(BUFFER_HEADER_LENGTH)
+    if '' == _read:
       raise ConnectionClosedException("Reader read 0 bytes.")
-    return BIG_ENDIAN_INT_STRUCT.unpack(read)[0]
+    return BIG_ENDIAN_INT_STRUCT.unpack(_read)[0]
 
 class FramedWriter(object):
   """Wrapper around a file-like object to write framed data."""
