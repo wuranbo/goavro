@@ -31,6 +31,12 @@ import (
 	"strings"
 )
 
+var NULL_RECORD interface{} = &struct {
+	s string
+}{
+	"37e99601472102d52b981e41847ec718",
+}
+
 const (
 	mask = byte(127)
 	flag = byte(128)
@@ -410,6 +416,7 @@ func (st symtab) makeUnionCodec(enclosingNamespace string, schema interface{}) (
 			if !ok {
 				return newEncoderError(friendlyName, invalidType+name)
 			}
+			// union会先写入代表schema的序号
 			if err = intEncoder(w, ue.index); err != nil {
 				return newEncoderError(friendlyName, err)
 			}
@@ -598,16 +605,15 @@ func (st symtab) makeRecordCodec(enclosingNamespace string, schema interface{}) 
 			for idx, field := range someRecord.Fields {
 				var value interface{}
 				// check whether field datum is valid
-				if field.Datum == nil {
+				if field.Datum == NULL_RECORD {
 					value = nil
-				} else {
-					if reflect.ValueOf(field.Datum).IsValid() {
-						value = field.Datum
-					} else if field.hasDefault {
-						value = field.defval
-					} else {
-						return newEncoderError(friendlyName, "field has no data and no default set: %v", field.Name)
-					}
+				} else if field.Datum == nil && field.hasDefault {
+					// 值不存在且没有default的应该跳转到else，标明require的字段没有被填上
+					value = field.defval
+				} else if reflect.ValueOf(field.Datum).IsValid() {
+					value = field.Datum
+				} else { // 如果
+					return newEncoderError(friendlyName, "field has no data and no default set: %v", field.Name)
 				}
 				err = fieldCodecs[idx].Encode(w, value)
 				if err != nil {
