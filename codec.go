@@ -391,18 +391,21 @@ func (st symtab) makeUnionCodec(enclosingNamespace string, schema interface{}) (
 		ef: func(w io.Writer, datum interface{}) error {
 			var err error
 			var name string
-			switch datum.(type) {
-			default:
-				name = reflect.TypeOf(datum).String()
-			case map[string]interface{}:
-				name = "map"
-			case []interface{}:
-				name = "array"
-			case nil:
+			if datum == nil {
 				name = "null"
-			case *Record:
-				name = datum.(*Record).Name
+			} else {
+				switch datum.(type) {
+				case map[string]interface{}:
+					name = "map"
+				case []interface{}:
+					name = "array"
+				case *Record:
+					name = datum.(*Record).Name
+				default:
+					name = reflect.TypeOf(datum).String()
+				}
 			}
+
 			ue, ok := nameToUnionEncoder[name]
 			if !ok {
 				return newEncoderError(friendlyName, invalidType+name)
@@ -595,12 +598,16 @@ func (st symtab) makeRecordCodec(enclosingNamespace string, schema interface{}) 
 			for idx, field := range someRecord.Fields {
 				var value interface{}
 				// check whether field datum is valid
-				if reflect.ValueOf(field.Datum).IsValid() {
-					value = field.Datum
-				} else if field.hasDefault {
-					value = field.defval
+				if field.Datum == nil {
+					value = nil
 				} else {
-					return newEncoderError(friendlyName, "field has no data and no default set: %v", field.Name)
+					if reflect.ValueOf(field.Datum).IsValid() {
+						value = field.Datum
+					} else if field.hasDefault {
+						value = field.defval
+					} else {
+						return newEncoderError(friendlyName, "field has no data and no default set: %v", field.Name)
+					}
 				}
 				err = fieldCodecs[idx].Encode(w, value)
 				if err != nil {

@@ -56,7 +56,6 @@ func framewriter(fw *Writer, toWrite <-chan *writerBlock) {
 		}
 		// fake empty meta.
 		err = binary.Write(fw.w, binary.BigEndian, int16(0))
-
 		if block.err == nil {
 			_, block.err = fw.w.Write(block.compressed)
 		}
