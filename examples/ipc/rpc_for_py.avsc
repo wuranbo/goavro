@@ -18,7 +18,7 @@
     },
     {"name": "Response", "type": "record", "namespace": "example",
       "fields": [
-        { "name": "messages", "type": { "type": "array", "items": "RespMessage" } }
+        { "name": "messages", "type":["null", { "type": "array", "items": "RespMessage" } ]}
       ]
     }
   ],

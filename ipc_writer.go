@@ -51,7 +51,6 @@ func framewriter(fw *Writer, toWrite <-chan *writerBlock) {
 	// TODO(wu.ranbo@yottabyte.cn) very import !!, ipc frame简化只有一个block，多个循环是错误。
 	for block := range toWrite {
 		err := binary.Write(fw.w, binary.BigEndian, int32(len(block.compressed)+2))
-		fmt.Println("len(block.compressed:%v", len(block.compressed))
 		if err != nil {
 			log.Printf("[WARNING] write buffer len failed!.: %v", err)
 		}
