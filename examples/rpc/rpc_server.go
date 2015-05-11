@@ -23,7 +23,7 @@ func (h Hello) ServeHTTP(
 	w http.ResponseWriter,
 	r *http.Request) {
 
-	fr, err := goavro.NewIpcRequestReader(requestSchema, goavro.FromReader(r.Body))
+	fr, err := goavro.NewRpcRequestReader(requestSchema, goavro.FromReader(r.Body))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -45,7 +45,7 @@ func (h Hello) ServeHTTP(
 		fmt.Println("ipcreauest: ", datum)
 	}
 
-	fw, err := goavro.NewIpcResponseWriter(
+	fw, err := goavro.NewRpcResponseWriter(
 		// goavro.Compression(goavro.CompressionSnappy),
 		responseSchema,
 		goavro.Compression(goavro.CompressionNull),

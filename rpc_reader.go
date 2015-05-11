@@ -7,32 +7,32 @@ import (
 	"io/ioutil"
 )
 
-type IpcReader struct {
+type RpcReader struct {
 	*Reader
 	msgname string
 	buflen  int
 	datalen int
 }
 
-type ErrReadIpcMessageName struct {
+type ErrReadRpcMessageName struct {
 	Err error
 }
 
-func (e *ErrReadIpcMessageName) Error() string {
-	return "ErrReadIpcMessageName:" + e.Err.Error()
+func (e *ErrReadRpcMessageName) Error() string {
+	return "ErrReadRpcMessageName:" + e.Err.Error()
 }
 
-type ErrReadIpcBufferLen struct {
+type ErrReadRpcBufferLen struct {
 	Err error
 }
 
-func (e *ErrReadIpcBufferLen) Error() string {
-	return "ErrReadIpcBufferLen: " + e.Err.Error()
+func (e *ErrReadRpcBufferLen) Error() string {
+	return "ErrReadRpcBufferLen: " + e.Err.Error()
 }
 
-func NewIpcRequestReader(requestSchema string, setters ...ReaderSetter) (*Reader, error) {
+func NewRpcRequestReader(requestSchema string, setters ...ReaderSetter) (*Reader, error) {
 	var err error
-	fr := &IpcReader{Reader: &Reader{}}
+	fr := &RpcReader{Reader: &Reader{}}
 	for _, setter := range setters {
 		err = setter(fr.Reader)
 		if err != nil {
@@ -54,7 +54,7 @@ func NewIpcRequestReader(requestSchema string, setters ...ReaderSetter) (*Reader
 	}
 	fr.datalen -= 1 // 对应py内meta为空，长度是一个byte, 看ipc.py中bug描述
 
-	name, namelen, err := decodeIpcMessageName(fr.r)
+	name, namelen, err := decodeRpcMessageName(fr.r)
 	if err != nil {
 		return nil, newReaderInitError("cannot decode ip message name", err)
 	}
@@ -77,18 +77,18 @@ func NewIpcRequestReader(requestSchema string, setters ...ReaderSetter) (*Reader
 	return fr.Reader, nil
 }
 
-func decodeIpcMessageName(r io.Reader) (string, int, error) {
+func decodeRpcMessageName(r io.Reader) (string, int, error) {
 	name, err := stringCodec.Decode(r)
 	if err != nil {
 		if ed, ok := err.(*ErrDecoder); ok && ed.Err.Error() == "EOF" {
 			return "", 0, nil // we're done
 		}
-		return "", 0, &ErrReadIpcMessageName{err}
+		return "", 0, &ErrReadRpcMessageName{err}
 	}
 	bb := new(bytes.Buffer)
 	err = stringCodec.Encode(bb, name)
 	if err != nil {
-		return "", 0, &ErrReadIpcMessageName{err}
+		return "", 0, &ErrReadRpcMessageName{err}
 	}
 	return name.(string), bb.Len(), nil
 }
@@ -101,13 +101,13 @@ func decodeBufferLength(r io.Reader) (int, int, error) {
 		if ed, ok := err.(*ErrDecoder); ok && ed.Err.Error() == "EOF" {
 			return 0, 0, nil // we're done
 		}
-		return 0, 0, &ErrReadIpcBufferLen{err}
+		return 0, 0, &ErrReadRpcBufferLen{err}
 	}
 	return int(bl), 4, nil
 }
 
 // 去掉sync
-func frameRead(fr *IpcReader, toDecompress chan<- *readerBlock) {
+func frameRead(fr *RpcReader, toDecompress chan<- *readerBlock) {
 	lr := io.LimitReader(fr.Reader.r, int64(fr.datalen))
 	bits, err := ioutil.ReadAll(lr)
 	if err != nil {

@@ -5,7 +5,8 @@
   "fields": [
     {
       "name": "messages",
-      "type": [ "null",
+      "default": "null",
+      "type": [ "null", "string",
         {
           "type": "array",
           "items": {

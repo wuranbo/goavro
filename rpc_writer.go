@@ -6,15 +6,15 @@ import (
 	"log"
 )
 
-type IpcWriter struct {
+type RpcWriter struct {
 	*Writer
 	msgname string
 	buflen  int
 }
 
-func NewIpcResponseWriter(responseSchema string, setters ...WriterSetter) (*Writer, error) {
+func NewRpcResponseWriter(responseSchema string, setters ...WriterSetter) (*Writer, error) {
 	var err error
-	fw := &IpcWriter{Writer: &Writer{CompressionCodec: CompressionNull, blockSize: DefaultWriterBlockSize}}
+	fw := &RpcWriter{Writer: &Writer{CompressionCodec: CompressionNull, blockSize: DefaultWriterBlockSize}}
 	for _, setter := range setters {
 		err = setter(fw.Writer)
 		if err != nil {
