@@ -9,10 +9,10 @@ import (
 type RpcWriter struct {
 	*Writer
 	msgname string
-	buflen  int
+	Buflen  int
 }
 
-func NewRpcResponseWriter(responseSchema string, setters ...WriterSetter) (*Writer, error) {
+func NewRpcResponseWriter(responseSchema string, setters ...WriterSetter) (*RpcWriter, error) {
 	var err error
 	fw := &RpcWriter{Writer: &Writer{CompressionCodec: CompressionNull, blockSize: DefaultWriterBlockSize}}
 	for _, setter := range setters {
@@ -44,7 +44,7 @@ func NewRpcResponseWriter(responseSchema string, setters ...WriterSetter) (*Writ
 	go encoder(fw.Writer, toEncode, toCompress)
 	go compressor(fw.Writer, toCompress, toWrite)
 	go framewriter(fw.Writer, toWrite)
-	return fw.Writer, nil
+	return fw, nil
 }
 
 func framewriter(fw *Writer, toWrite <-chan *writerBlock) {
