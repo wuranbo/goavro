@@ -43,7 +43,7 @@ func NewRpcResponseWriter(responseSchema string, setters ...WriterSetter) (*RpcW
 	go blocker(fw.Writer, fw.toBlock, toEncode)
 	go encoder(fw.Writer, toEncode, toCompress)
 	go compressor(fw.Writer, toCompress, toWrite)
-	go framewriter(fw.Writer, toWrite)
+	go framewriter(fw, toWrite)
 	return fw, nil
 }
 
