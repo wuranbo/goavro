@@ -101,17 +101,18 @@ func BlockTick(blockTick time.Duration) WriterSetter {
 	}
 }
 
+// 删除掉这个接口，
 // BufferToWriter specifies which io.Writer is the target of the
 // Writer stream, and creates a bufio.Writer around that io.Writer. It
 // is invalid to specify both BufferToWriter and ToWriter. Exactly one
 // of these must be called for a given Writer initialization.
-func BufferToWriter(w io.Writer) WriterSetter {
-	return func(fw *Writer) error {
-		fw.w = bufio.NewWriter(w)
-		fw.buffered = true
-		return nil
-	}
-}
+// func BufferToWriter(w io.Writer) WriterSetter {
+// return func(fw *Writer) error {
+// fw.w = bufio.NewWriter(w)
+// fw.buffered = true
+// return nil
+// }
+// }
 
 // Compression is used to set the compression codec of
 // a new Writer instance.
@@ -269,6 +270,9 @@ func NewWriter(setters ...WriterSetter) (*Writer, error) {
 	return fw, nil
 }
 
+// // TODO(wu.ranbo@yottabyte.cn) 为啥必须得<-
+// BUG(wu.ranbo@yottabyte.cn) 调查清楚为啥必须得在外部<-，在http库中才能写进，是net/http哪个隐含设计么？
+// 注意用法，只close是不行的，还需要在close之后调用<-WritterDone
 // Close is called when the open file is no longer needed. It flushes
 // the bytes to the io.Writer if the file is being writtern.
 func (fw *Writer) Close() error {

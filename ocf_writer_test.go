@@ -112,7 +112,7 @@ func TestWriteHeaderCustomSync(t *testing.T) {
 func TestWriteWithNullCodec(t *testing.T) {
 	bb := new(bytes.Buffer)
 	func(w io.Writer) {
-		fw, err := NewWriter(BufferToWriter(w), WriterSchema(`"int"`), Sync(defaultSync))
+		fw, err := NewWriter(ToWriter(w), WriterSchema(`"int"`), Sync(defaultSync))
 		if err != nil {
 			t.Fatalf("Actual: %#v; Expected: %#v", err, nil)
 		}
