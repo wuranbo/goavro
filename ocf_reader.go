@@ -21,11 +21,12 @@ package goavro
 import (
 	"bufio"
 	"bytes"
-	"code.google.com/p/snappy-go/snappy"
 	"compress/flate"
 	"fmt"
 	"io"
 	"io/ioutil"
+
+	"code.google.com/p/snappy-go/snappy"
 )
 
 // ErrReaderInit is returned when the encoder encounters an error.
@@ -193,7 +194,10 @@ func (fr *Reader) Close() error {
 
 // Scan returns true if more data is ready to be read.
 func (fr *Reader) Scan() bool {
+	fmt.Println("---in Scan")
 	fr.datum = <-fr.deblocked
+	fmt.Println("---in Scan:fr.done:%v", fr.done)
+	fmt.Println("---in Scan:fr.datum:%v", fr.datum)
 	return !fr.done
 }
 
@@ -358,17 +362,22 @@ func decompress(fr *Reader, toDecompress <-chan *readerBlock, toDecode chan<- *r
 }
 
 func decode(fr *Reader, toDecode <-chan *readerBlock) {
+	fmt.Println("-------in decode.")
 decodeLoop:
 	for block := range toDecode {
+		fmt.Println("-------range toDecode.")
 		for i := 0; i < block.datumCount; i++ {
+			fmt.Println("-------loop datumCount.")
 			var datum Datum
 			datum.Value, datum.Err = fr.dataCodec.Decode(block.r)
 			if datum.Value == nil && datum.Err == nil {
 				break decodeLoop
 			}
+			fmt.Println("-------deblocked!.")
 			fr.deblocked <- datum
 		}
 	}
+	fmt.Println("-------done=true!.")
 	fr.done = true
 	close(fr.deblocked)
 }
