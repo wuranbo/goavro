@@ -39,7 +39,7 @@ func NewRpcResponseWriter(responseSchema string, setters ...WriterSetter) (*RpcW
 	toEncode := make(chan *writerBlock)
 	toCompress := make(chan *writerBlock)
 	toWrite := make(chan *writerBlock)
-	fw.writerDone = make(chan struct{})
+	fw.WriterDone = make(chan struct{})
 	go blocker(fw.Writer, fw.toBlock, toEncode)
 	go encoder(fw.Writer, toEncode, toCompress)
 	go compressor(fw.Writer, toCompress, toWrite)
@@ -81,5 +81,5 @@ func framewriter(fw *RpcWriter, toWrite <-chan *writerBlock) {
 	// if fw.err = longCodec.Encode(fw.w, int64(0)); fw.err == nil {
 	// fw.err = longCodec.Encode(fw.w, int64(0))
 	// }
-	fw.writerDone <- struct{}{}
+	fw.WriterDone <- struct{}{}
 }

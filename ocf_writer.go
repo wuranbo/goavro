@@ -184,7 +184,7 @@ type Writer struct {
 	err              error
 	toBlock          chan interface{}
 	w                io.Writer
-	writerDone       chan struct{}
+	WriterDone       chan struct{}
 	blockTick        time.Duration
 }
 
@@ -261,7 +261,7 @@ func NewWriter(setters ...WriterSetter) (*Writer, error) {
 	toEncode := make(chan *writerBlock)
 	toCompress := make(chan *writerBlock)
 	toWrite := make(chan *writerBlock)
-	fw.writerDone = make(chan struct{})
+	fw.WriterDone = make(chan struct{})
 	go blocker(fw, fw.toBlock, toEncode)
 	go encoder(fw, toEncode, toCompress)
 	go compressor(fw, toCompress, toWrite)
@@ -273,7 +273,6 @@ func NewWriter(setters ...WriterSetter) (*Writer, error) {
 // the bytes to the io.Writer if the file is being writtern.
 func (fw *Writer) Close() error {
 	close(fw.toBlock)
-	<-fw.writerDone
 	if fw.buffered {
 		// NOTE: error that happened before Close has
 		// precedence of buffer flush error
@@ -425,5 +424,5 @@ func writer(fw *Writer, toWrite <-chan *writerBlock) {
 	// if fw.err = longCodec.Encode(fw.w, int64(0)); fw.err == nil {
 	// fw.err = longCodec.Encode(fw.w, int64(0))
 	// }
-	fw.writerDone <- struct{}{}
+	fw.WriterDone <- struct{}{}
 }
