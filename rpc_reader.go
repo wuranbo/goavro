@@ -9,9 +9,9 @@ import (
 
 type RpcReader struct {
 	*Reader
-	msgname string
-	buflen  int
-	datalen int
+	MsgName string
+	Buflen  int
+	Datalen int
 }
 
 type ErrReadRpcMessageName struct {
@@ -30,7 +30,7 @@ func (e *ErrReadRpcBufferLen) Error() string {
 	return "ErrReadRpcBufferLen: " + e.Err.Error()
 }
 
-func NewRpcRequestReader(requestSchema string, setters ...ReaderSetter) (*Reader, error) {
+func NewRpcRequestReader(requestSchema string, setters ...ReaderSetter) (*RpcReader, error) {
 	var err error
 	fr := &RpcReader{Reader: &Reader{}}
 	for _, setter := range setters {
@@ -42,24 +42,24 @@ func NewRpcRequestReader(requestSchema string, setters ...ReaderSetter) (*Reader
 	if fr.r == nil {
 		return nil, newReaderInitError("must specify io.Reader")
 	}
-	buflen, _, err := decodeBufferLength(fr.r)
+	fr.Buflen, _, err = decodeBufferLength(fr.r)
 	if err != nil {
 		return nil, newReaderInitError("cannot read buff length", err)
 	}
-	fr.datalen = buflen
+	fr.Datalen = fr.Buflen
 
 	_, err = decodeHeaderMetadata(fr.r)
 	if err != nil {
 		return nil, newReaderInitError("cannot read header metadata", err)
 	}
-	fr.datalen -= 1 // 对应py内meta为空，长度是一个byte, 看ipc.py中bug描述
+	fr.Datalen -= 1 // 对应py内meta为空，长度是一个byte, 看ipc.py中bug描述
 
 	name, namelen, err := decodeRpcMessageName(fr.r)
 	if err != nil {
 		return nil, newReaderInitError("cannot decode ip message name", err)
 	}
-	fr.msgname = name
-	fr.datalen -= namelen
+	fr.MsgName = name
+	fr.Datalen -= namelen
 
 	fr.CompressionCodec = "null" // python ipc 不加密
 	fr.DataSchema = requestSchema
@@ -74,7 +74,7 @@ func NewRpcRequestReader(requestSchema string, setters ...ReaderSetter) (*Reader
 	go frameRead(fr, toDecompress)
 	go decompress(fr.Reader, toDecompress, toDecode)
 	go decode(fr.Reader, toDecode)
-	return fr.Reader, nil
+	return fr, nil
 }
 
 func decodeRpcMessageName(r io.Reader) (string, int, error) {
@@ -108,7 +108,7 @@ func decodeBufferLength(r io.Reader) (int, int, error) {
 
 // 去掉sync
 func frameRead(fr *RpcReader, toDecompress chan<- *readerBlock) {
-	lr := io.LimitReader(fr.Reader.r, int64(fr.datalen))
+	lr := io.LimitReader(fr.Reader.r, int64(fr.Datalen))
 	bits, err := ioutil.ReadAll(lr)
 	if err != nil {
 		err = newReaderError("cannot read block", err)
