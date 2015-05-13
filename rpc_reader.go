@@ -106,13 +106,25 @@ func decodeBufferLength(r io.Reader) (int, int, error) {
 	return int(bl), 4, nil
 }
 
-// 去掉sync
+// rpc的frame嵌入到读文件block的流程中的变动：
+// block是每个开头有两个loang标记总block和当前block长度
+// ipc是每个frame只开头一个buflen标记当前frame的长度，通过最后一个frame为四个0byte来区分
+// 而且开头第一个fram的buflen已经在newrpcreader时候被读出来记录
+// !rpc_writer里跟block写法集成的方式于此类似
 func frameRead(fr *RpcReader, toDecompress chan<- *readerBlock) {
-	lr := io.LimitReader(fr.Reader.r, int64(fr.Datalen))
+	// 没有握手不考虑反复的流式传输的py的实现，更简化为一次请求只有一个frame
+	lr := io.LimitReader(fr.Reader.r, int64(fr.Datalen)) // 第一个block就把内容都读出来
 	bits, err := ioutil.ReadAll(lr)
 	if err != nil {
 		err = newReaderError("cannot read block", err)
 	}
-	toDecompress <- &readerBlock{datumCount: 1, r: bytes.NewReader(bits)}
+
+	// 主Scan()方法中是fr.datum<-fr.deblock，因此会等待fr.deblock有值
+	toDecompress <- &readerBlock{datumCount: 1, r: bytes.NewReader(bits)} // 第一个block
+	// 这一句是三个worker routine触发的开始，执行后会让另一个routine：ocf_reader.go:decode()执行fr.deblocked <- datum。从而主routie的Scan()方法可以继续执行。
+	// 在ocf_reader.go:read()中是循环block，因此当主routine,Scan()方法没有被执行的时候应该卡在decode()fr.deblock<-datum这一句
+
+	// routine:frameRead()在循环读取block结束后会继续，因此close掉decompress
+	// closedecompress导致另一个routine:decompress()执行结束，执行了close(toDecode)
 	close(toDecompress)
 }

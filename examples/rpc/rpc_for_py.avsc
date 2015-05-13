@@ -1,0 +1,35 @@
+{"namespace": "example",
+  "protocol": "Mail",
+
+  "types": [
+    {"name": "ReqMessage", "type": "record", "namespace": "example",
+      "fields": [
+        {"name": "to",   "type": "string"},
+        {"name": "from", "type": "string"},
+        {"name": "reqbody", "type": "string"}
+      ]
+    },
+    {"name": "RespMessage", "type": "record", "namespace": "example",
+      "fields": [
+        {"name": "to", "type": "string"},
+        {"name": "from", "type": "string"},
+        {"name": "respbody", "type":"string"}
+      ]
+    },
+    {"name": "Response", "type": "record", "namespace": "example",
+      "fields": [
+        { "name": "messages", "type":["null", "string", { "type": "array", "items": "RespMessage" } ], "default": null }
+      ]
+    }
+  ],
+  "messages": {
+    "send": {
+      "request": [{
+        "name": "messages",
+        "type": ["string", {"type": "array", "items": "ReqMessage"}],
+        "default": "defaultstr"
+      }],
+      "response": "Response"
+    }
+  }
+}

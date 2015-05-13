@@ -1,0 +1,648 @@
+{
+  "name": "RpcRequest",
+  "type": "record",
+  "namespace": "com.cloudera.cmf.protocol",
+  "fields": [
+  {
+    "name": "request",
+    "type":
+    {
+      "type": "record",
+      "name": "HeartbeatRequest",
+      "namespace": "com.cloudera.cmf.protocol",
+      "fields": [
+      {
+        "name": "version",
+        "type": "long",
+        "default": 4
+      },
+      {
+        "name": "host_id",
+        "type": "string"
+      },
+      {
+        "name": "status_hash",
+        "type": "bytes"
+      },
+      {
+        "name": "status",
+        "type": ["null",
+        {
+          "type": "record",
+          "name": "HeartbeatStatus",
+          "fields": [
+          {
+            "name": "host",
+            "type":
+            {
+              "type": "record",
+              "name": "HostStatus",
+              "fields": [
+              {
+                "name": "host_name",
+                "type": "string"
+              },
+              {
+                "name": "ip_address",
+                "type": "string"
+              },
+              {
+                "name": "agent_url",
+                "type": "string"
+              },
+              {
+                "name": "filesystem_info",
+                "type":
+                {
+                  "type": "array",
+                  "items":
+                  {
+                    "type": "record",
+                    "name": "FilesystemInfo",
+                    "fields": [
+                    {
+                      "name": "name",
+                      "type": "string"
+                    },
+                    {
+                      "name": "total_space_bytes",
+                      "type": "long"
+                    },
+                    {
+                      "name": "mount_point",
+                      "type": "string"
+                    },
+                    {
+                      "name": "nodev",
+                      "type": "boolean",
+                      "default": false
+                    }]
+                  }
+                },
+                "default": []
+              },
+              {
+                "name": "num_cores",
+                "type": "long",
+                "default": 1
+              },
+              {
+                "name": "num_physical_cores",
+                "type": "long",
+                "default": 0
+              },
+              {
+                "name": "agent_token",
+                "type": "bytes",
+                "default": "Default Random Token"
+              },
+              {
+                "name": "component_info",
+                "type":
+                {
+                  "type": "array",
+                  "items":
+                  {
+                    "type": "record",
+                    "name": "ComponentInfo",
+                    "fields": [
+                    {
+                      "name": "name",
+                      "type": "string"
+                    },
+                    {
+                      "name": "cdh_version",
+                      "type":
+                      {
+                        "type": "enum",
+                        "name": "CDHVersion",
+                        "symbols": ["CDH3", "CDH4", "CDH5", "NO_VERSION_FILE", "BAD_VERSION_FILE", "NO_SCRIPT", "NOT_APPLICABLE"]
+                      }
+                    },
+                    {
+                      "name": "cdh_release",
+                      "type": "string",
+                      "default": ""
+                    },
+                    {
+                      "name": "component_version",
+                      "type": "string"
+                    },
+                    {
+                      "name": "component_release",
+                      "type": "string",
+                      "default": ""
+                    },
+                    {
+                      "name": "source",
+                      "type":
+                      {
+                        "type": "enum",
+                        "name": "ComponentInfoSource",
+                        "symbols": ["UNKNOWN", "PACKAGE", "PARCEL", "SYSTEM"]
+                      },
+                      "default": "UNKNOWN"
+                    },
+                    {
+                      "name": "active",
+                      "type": "boolean",
+                      "default": true
+                    }]
+                  }
+                },
+                "default": []
+              },
+              {
+                "name": "parcels_directory",
+                "type": "string",
+                "default": ""
+              },
+              {
+                "name": "parcels_directory_overridden",
+                "type": "boolean",
+                "default": true
+              },
+              {
+                "name": "parcel_info",
+                "type":
+                {
+                  "type": "map",
+                  "values":
+                  {
+                    "type": "map",
+                    "values":
+                    {
+                      "type": "record",
+                      "name": "ParcelInfo",
+                      "fields": [
+                      {
+                        "name": "name",
+                        "type": "string"
+                      },
+                      {
+                        "name": "version",
+                        "type": "string"
+                      },
+                      {
+                        "name": "setActiveSymlink",
+                        "type": "boolean"
+                      },
+                      {
+                        "name": "components",
+                        "type":
+                        {
+                          "type": "array",
+                          "items":
+
+                          {
+                            "type": "record",
+                            "name": "ParcelComponentInfo",
+                            "fields": [
+                            {
+                              "name": "name",
+                              "type": "string"
+                            },
+                            {
+                              "name": "version",
+                              "type": "string"
+                            }]
+                          }
+                        }
+                      },
+                      {
+                        "name": "packages",
+                        "type":
+                        {
+                          "type": "array",
+                          "items":
+
+                          {
+                            "type": "record",
+                            "name": "ParcelComponentInfo",
+                            "fields": [
+                            {
+                              "name": "name",
+                              "type": "string"
+                            },
+                            {
+                              "name": "version",
+                              "type": "string"
+                            }]
+                          }
+                        }
+                      },
+                      {
+                        "name": "provides",
+                        "type": ["null",
+                        {
+                          "type": "array",
+                          "items": "string"
+                        }],
+                        "default": null
+                      },
+                      {
+                        "name": "users",
+                        "type":
+                        {
+                          "type": "map",
+                          "values":
+                          {
+                            "type": "record",
+                            "name": "ParcelUserInfo",
+                            "fields": [
+                            {
+                              "name": "longname",
+                              "type": "string"
+                            },
+                            {
+                              "name": "home",
+                              "type": "string"
+                            },
+                            {
+                              "name": "shell",
+                              "type": "string"
+                            },
+                            {
+                              "name": "extra_groups",
+                              "type":
+                              {
+                                "type": "array",
+                                "items": "string"
+                              }
+                            }]
+                          }
+                        }
+                      },
+                      {
+                        "name": "groups",
+                        "type":
+                        {
+                          "type": "array",
+                          "items": "string"
+                        }
+                      },
+                      {
+                        "name": "scripts",
+                        "type":
+                        {
+                          "type": "map",
+                          "values": "string"
+                        }
+                      }]
+                    }
+                  }
+                },
+                "default":
+                {}
+              },
+              {
+                "name": "parcel_err",
+                "type":
+                {
+                  "type": "map",
+                  "values":
+                  {
+                    "type": "map",
+                    "values":
+                    {
+                      "type": "record",
+                      "name": "ParcelErr",
+                      "fields": [
+                      {
+                        "name": "code",
+                        "type": "string"
+                      },
+                      {
+                        "name": "msg",
+                        "type": "string"
+                      }]
+                    }
+                  }
+                },
+                "default":
+                {}
+              },
+              {
+                "name": "active_parcels",
+                "type": ["null",
+                {
+                  "type": "map",
+                  "values": "string"
+                }],
+                "default": null
+              },
+              {
+                "name": "distro_info",
+                "type": ["null",
+                {
+                  "type": "record",
+                  "name": "Distro",
+                  "fields": [
+                  {
+                    "name": "name",
+                    "type": "string"
+                  },
+                  {
+                    "name": "version",
+                    "type": "string"
+                  },
+                  {
+                    "name": "id",
+                    "type": "string"
+                  }]
+                }],
+                "default": null
+              },
+              {
+                "name": "cgroup_capabilities",
+                "type": ["null",
+                {
+                  "type": "record",
+                  "name": "CGroupCaps",
+                  "fields": [
+                  {
+                    "name": "has_blkio",
+                    "type": "boolean"
+                  },
+                  {
+                    "name": "has_cpu",
+                    "type": "boolean"
+                  },
+                  {
+                    "name": "has_cpuacct",
+                    "type": "boolean",
+                    "default": false
+                  },
+                  {
+                    "name": "has_memory",
+                    "type": "boolean"
+                  },
+                  {
+                    "name": "default_blkio_weight",
+                    "type": "long"
+                  },
+                  {
+                    "name": "default_cpu_shares",
+                    "type": "long"
+                  },
+                  {
+                    "name": "default_cpu_rt_runtime_us",
+                    "type": "long",
+                    "default": -1
+                  },
+                  {
+                    "name": "default_memory_limit_in_bytes",
+                    "type": "long"
+                  },
+                  {
+                    "name": "default_memory_soft_limit_in_bytes",
+                    "type": "long",
+                    "default": -1
+                  },
+                  {
+                    "name": "writable_cgroup_dot_procs",
+                    "type": "boolean"
+                  }]
+                }],
+                "default": null
+              },
+              {
+                "name": "cloud_status",
+                "type": ["null",
+                {
+                  "type": "record",
+                  "name": "CloudStatus",
+                  "fields": [
+                  {
+                    "name": "public_host_name",
+                    "type": ["null", "string"],
+                    "default": null
+                  },
+                  {
+                    "name": "public_ip_address",
+                    "type": ["null", "string"],
+                    "default": null
+                  },
+                  {
+                    "name": "cloud_provider",
+                    "type": "string"
+                  }]
+                }],
+                "default": null
+              },
+              {
+                "name": "agent_system_user",
+                "type": ["null", "string"],
+                "default": null
+              },
+              {
+                "name": "agent_system_group",
+                "type": ["null", "string"],
+                "default": null
+              }]
+            }
+          },
+          {
+            "name": "processes",
+            "type":
+            {
+              "type": "array",
+              "items":
+              {
+                "type": "record",
+                "name": "ProcessStatus",
+                "fields": [
+                {
+                  "name": "name",
+                  "type": "string"
+                },
+                {
+                  "name": "status",
+                  "type": "string"
+                },
+                {
+                  "name": "stdout_tail",
+                  "type": "string"
+                },
+                {
+                  "name": "stderr_tail",
+                  "type": "string"
+                },
+                {
+                  "name": "exit_code",
+                  "type": "int"
+                },
+                {
+                  "name": "cm_status_code",
+                  "type": "string",
+                  "default": "STATUS_NONE"
+                },
+                {
+                  "name": "run_generation",
+                  "type": "long"
+                },
+                {
+                  "name": "pid",
+                  "type": "int",
+                  "default": -1
+                },
+                {
+                  "name": "parcels_in_use",
+                  "type":
+                  {
+                    "type": "map",
+                    "values": "string"
+                  },
+                  "default":
+                  {}
+                }]
+              }
+            }
+          }]
+        }]
+      },
+      {
+        "name": "last_response_hash",
+        "type": "bytes"
+      },
+      {
+        "name": "host_stats",
+        "type": ["null",
+        {
+          "type": "record",
+          "name": "HostStats",
+          "fields": [
+          {
+            "name": "load_avg",
+            "type":
+            {
+              "type": "array",
+              "items": "float"
+            }
+          },
+          {
+            "name": "physical_memory_total",
+            "type": "long"
+          },
+          {
+            "name": "physical_memory_used",
+            "type": "long"
+          },
+          {
+            "name": "virtual_memory_total",
+            "type": "long"
+          },
+          {
+            "name": "virtual_memory_used",
+            "type": "long"
+          },
+          {
+            "name": "mountpoint_available_space_bytes",
+            "type":
+            {
+              "type": "map",
+              "values": "long"
+            },
+            "default":
+            {}
+          },
+          {
+            "name": "parcel_downloads",
+            "type":
+            {
+              "type": "array",
+              "items":
+              {
+                "type": "record",
+                "name": "ParcelDownload",
+                "fields": [
+                {
+                  "name": "url",
+                  "type": "string"
+                },
+                {
+                  "name": "state",
+                  "type": "string"
+                },
+                {
+                  "name": "active",
+                  "type": "boolean"
+                },
+                {
+                  "name": "progress",
+                  "type": "long"
+                },
+                {
+                  "name": "parcel_err",
+                  "type": ["null",
+                  {
+                    "type": "record",
+                    "name": "ParcelErr",
+                    "fields": [
+                    {
+                      "name": "code",
+                      "type": "string"
+                    },
+                    {
+                      "name": "msg",
+                      "type": "string"
+                    }]
+                  }],
+                  "default": null
+                }]
+              }
+            },
+            "default": []
+          }]
+        }]
+      },
+      {
+        "name": "process_stats",
+        "type":
+        {
+          "type": "array",
+          "items":
+
+          {
+            "type": "record",
+            "name": "ProcessStats",
+            "fields": [
+            {
+              "name": "id",
+              "type": "long"
+            },
+            {
+              "name": "rss",
+              "type": "long"
+            },
+            {
+              "name": "vms",
+              "type": "long"
+            },
+            {
+              "name": "cpu_percent",
+              "type": "double"
+            },
+            {
+              "name": "user_cpu_time",
+              "type": "float"
+            },
+            {
+              "name": "system_cpu_time",
+              "type": "float"
+            },
+            {
+              "name": "wallclock_time",
+              "type": "long"
+            }]
+          }
+        }
+      },
+      {
+        "name": "total_cpu",
+        "type": "double",
+        "default": 0
+      }]
+    }
+  }]
+}

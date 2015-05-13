@@ -1,0 +1,24 @@
+{
+  "namespace": "example",
+  "name": "Request",
+  "type": "record",
+  "fields": [
+    {
+      "name": "messages",
+      "default": "defaultstr",
+      "type": [
+        "string", {"type": "array", "items": {
+        "namespace": "example",
+        "type": "record",
+        "name": "ReqMessage",
+        "fields": [
+          {"name": "to",   "type": "string"},
+          {"name": "from", "type": "string"},
+          {"name": "reqbody", "type": "string"}
+        ]
+      }}]
+    }
+  ]
+}
+
+

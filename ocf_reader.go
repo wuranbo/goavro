@@ -192,17 +192,27 @@ func (fr *Reader) Close() error {
 	return fr.err
 }
 
+func (fr *Reader) ScanData(doing func(interface{}, error) error) {
+	for fr.datum = range fr.deblocked {
+		err := doing(fr.Read())
+		if err != nil {
+			break
+		}
+	}
+}
+
+// 此方法有 BUG! 看ScanData方法
 // Scan returns true if more data is ready to be read.
 func (fr *Reader) Scan() bool {
 	if fr.done {
 		return false
-	} else {
-		fr.datum = <-fr.deblocked
-		if fr.done {
-			return true
-		}
-		return false
 	}
+	// 当第一次Scan调用导致routine:decode要执行fr.done=true但还没有执行到的时候,
+	// 下一次Scan函数进入不能在前面return false，则又走到这里，
+	// 需要等待decode()里去closedeblocked，虽然decode:里close()在done=true之后，
+	// 不会锁死，但也不好，会给fr.datum一个zero值
+	fr.datum = <-fr.deblocked
+	return true
 }
 
 // Read returns the next element from the Reader.
