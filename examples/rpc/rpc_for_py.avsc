@@ -6,14 +6,15 @@
       "fields": [
         {"name": "to",   "type": "string"},
         {"name": "from", "type": "string"},
-        {"name": "reqbody", "type": "string"}
+        {"name": "reqbody", "type": ["null", "string"]}
       ]
     },
     {"name": "RespMessage", "type": "record", "namespace": "example",
       "fields": [
         {"name": "to", "type": "string"},
         {"name": "from", "type": "string"},
-        {"name": "respbody", "type":"string"}
+        {"name": "respbody", "type":"string"},
+        {"name": "union", "type": ["null", "string"]}
       ]
     },
     {"name": "Response", "type": "record", "namespace": "example",

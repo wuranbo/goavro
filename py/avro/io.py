@@ -103,40 +103,43 @@ def validate(expected_schema, datum):
   """Determine if a python datum is an instance of a schema."""
   schema_type = expected_schema.type
   if schema_type == 'null':
-    return datum is None
+    ret = datum is None
   elif schema_type == 'boolean':
-    return isinstance(datum, bool)
+    ret = isinstance(datum, bool)
   elif schema_type == 'string':
-    return isinstance(datum, basestring)
+    ret = isinstance(datum, basestring)
   elif schema_type == 'bytes':
-    return isinstance(datum, str)
+    ret = isinstance(datum, str)
   elif schema_type == 'int':
-    return ((isinstance(datum, int) or isinstance(datum, long))
+    ret = ((isinstance(datum, int) or isinstance(datum, long))
             and INT_MIN_VALUE <= datum <= INT_MAX_VALUE)
   elif schema_type == 'long':
-    return ((isinstance(datum, int) or isinstance(datum, long))
+    ret = ((isinstance(datum, int) or isinstance(datum, long))
             and LONG_MIN_VALUE <= datum <= LONG_MAX_VALUE)
   elif schema_type in ['float', 'double']:
-    return (isinstance(datum, int) or isinstance(datum, long)
+    ret = (isinstance(datum, int) or isinstance(datum, long)
             or isinstance(datum, float))
   elif schema_type == 'fixed':
-    return isinstance(datum, str) and len(datum) == expected_schema.size
+    ret = isinstance(datum, str) and len(datum) == expected_schema.size
   elif schema_type == 'enum':
-    return datum in expected_schema.symbols
+    ret = datum in expected_schema.symbols
   elif schema_type == 'array':
-    return (isinstance(datum, list) and
+    ret = (isinstance(datum, list) and
       False not in [validate(expected_schema.items, d) for d in datum])
   elif schema_type == 'map':
-    return (isinstance(datum, dict) and
+    ret = (isinstance(datum, dict) and
       False not in [isinstance(k, basestring) for k in datum.keys()] and
       False not in
         [validate(expected_schema.values, v) for v in datum.values()])
   elif schema_type in ['union', 'error_union']:
-    return True in [validate(s, datum) for s in expected_schema.schemas]
+    ret = True in [validate(s, datum) for s in expected_schema.schemas]
   elif schema_type in ['record', 'error', 'request']:
-    return (isinstance(datum, dict) and
+    ret = (isinstance(datum, dict) and
       False not in
         [validate(f.type, datum.get(f.name)) for f in expected_schema.fields])
+  #if not ret:
+    # import pdb; pdb.set_trace()
+  return ret
 
 #
 # Decoder/Encoder

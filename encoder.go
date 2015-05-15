@@ -81,27 +81,11 @@ func booleanEncoder(w io.Writer, datum interface{}) error {
 }
 
 func intEncoder(w io.Writer, datum interface{}) error {
-	downShift := uint32(31)
 	someInt, ok := datum.(int32)
 	if !ok {
 		return newEncoderError("int", "expected: int32; received: %T", datum)
 	}
-	encoded := int64((someInt << 1) ^ (someInt >> downShift))
-	bb := make([]byte, 0)
-	if encoded == 0 {
-		bb = append(bb, byte(0))
-	} else {
-		for encoded > 0 {
-			b := byte(encoded & 127)
-			encoded = encoded >> 7
-			if !(encoded == 0) {
-				b |= 128
-			}
-			bb = append(bb, b)
-		}
-	}
-	_, err := w.Write(bb)
-	return err
+	return longEncoder(w, int64(someInt))
 }
 
 func longEncoder(w io.Writer, datum interface{}) error {

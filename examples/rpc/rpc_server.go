@@ -63,9 +63,10 @@ func (h Hello) ServeHTTP(
 		fmt.Println("sss")
 		log.Fatal(err)
 	}
-	respMessageRecord.Set("to", "t")
-	respMessageRecord.Set("from", "f")
-	respMessageRecord.Set("respbody", "r")
+	respMessageRecord.Set("to", "tss")
+	respMessageRecord.Set("from", "fss")
+	respMessageRecord.Set("respbody", "rss")
+	respMessageRecord.Set("union", "union--union")
 	messages = append(messages, respMessageRecord)
 
 	responseRecord, err := goavro.NewRecord(goavro.RecordSchema(responseSchema))
@@ -78,11 +79,10 @@ func (h Hello) ServeHTTP(
 	responseRecord.Set("messages", messages)
 
 	fw.Write(responseRecord)
-	defer func() {
-		fr.Close()
-		fw.Close()
-		<-fw.WriterDone
-	}()
+
+	fr.Close()
+	fw.Close()
+	<-fw.WriterDone
 }
 
 func main() {

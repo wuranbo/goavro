@@ -56,8 +56,10 @@ func (r Record) Get(fieldName string) (interface{}, error) {
 // GetFieldSchema returns the schema of the specified Record field.
 func (r Record) GetFieldSchema(fieldName string) (interface{}, error) {
 	// qualify fieldName searches based on record namespace
-	fn, _ := newName(nameName(fieldName), nameNamespace(r.n.ns))
-
+	fn, err := newName(nameName(fieldName), nameNamespace(r.n.ns))
+	if err != nil {
+		return nil, fmt.Errorf("no such field: %s", fieldName)
+	}
 	for _, field := range r.Fields {
 		if field.Name == fn.n {
 			return field.schema, nil

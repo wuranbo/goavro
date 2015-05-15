@@ -5,6 +5,7 @@
   "fields": [
         {"name": "to",   "type": "string"},
         {"name": "from", "type": "string"},
-        {"name": "respbody", "type": "string"}
+        {"name": "respbody", "type": "string"},
+        {"name": "union", "type": ["null", "string"]}
   ]
 }

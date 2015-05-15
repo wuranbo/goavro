@@ -176,7 +176,7 @@ func TestCodecDecoderPrimitives(t *testing.T) {
 	checkCodecDecoderResult(t, `"boolean"`, []byte("\x00"), false)
 	checkCodecDecoderResult(t, `"boolean"`, []byte("\x01"), true)
 	// int
-	checkCodecDecoderError(t, `"int"`, []byte(""), "cannot decode int: EOF")
+	checkCodecDecoderError(t, `"int"`, []byte(""), "cannot decode long: EOF")
 	checkCodecDecoderResult(t, `"int"`, []byte("\x00"), int32(0))
 	checkCodecDecoderResult(t, `"int"`, []byte("\x05"), int32(-3))
 	checkCodecDecoderResult(t, `"int"`, []byte("\x06"), int32(3))
@@ -344,6 +344,7 @@ func TestCodecUnionPrimitives(t *testing.T) {
 	checkCodecEncoderResult(t, `["int","bytes"]`, []byte("foobar"), []byte("\x02\x0cfoobar"))
 	// string
 	checkCodecEncoderResult(t, `["string","float"]`, "filibuster", []byte("\x00\x14filibuster"))
+	checkCodecEncoderResult(t, `["null","string"]`, "ssss", []byte("\x02\x08ssss"))
 }
 
 func TestCodecDecoderUnion(t *testing.T) {
@@ -363,7 +364,7 @@ func TestCodecEncoderUnionArray(t *testing.T) {
 func TestCodecEncoderUnionMap(t *testing.T) {
 	someMap := make(map[string]interface{})
 	someMap["superhero"] = "Batman"
-	checkCodecEncoderResult(t, `["null",{"type":"map","values":"string"}]`, someMap, []byte("\x02\x02\x12superhero\x0cBatman\x00"))
+	checkCodecEncoderResult(t, `["null",{"type":"map","values":"string"}]`, someMap, []byte("\x02\x12superhero\x0cBatman\x00"))
 }
 
 func TestCodecEncoderUnionRecord(t *testing.T) {
@@ -725,8 +726,8 @@ func TestCodecEncoderMapMetadataSchema(t *testing.T) {
 
 	// NOTE: because key value pair ordering is indeterminate,
 	// there are two valid possibilities for the encoded map:
-	option1 := []byte("\x04\x14avro.codec\x08null\x16avro.schema\x0a\x22int\x22\x00")
-	option2 := []byte("\x04\x16avro.schema\x0a\x22int\x22\x14avro.codec\x08null\x00")
+	option1 := []byte("\x14avro.codec\x08null\x16avro.schema\x0a\x22int\x22\x00")
+	option2 := []byte("\x16avro.schema\x0a\x22int\x22\x14avro.codec\x08null\x00")
 
 	bb := new(bytes.Buffer)
 	err := metadataCodec.Encode(bb, md)

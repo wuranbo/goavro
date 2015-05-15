@@ -100,8 +100,8 @@ func TestWriteHeaderCustomSync(t *testing.T) {
 
 	// NOTE: because key value pair ordering is indeterminate,
 	// there are two valid possibilities for the encoded map:
-	option1 := []byte("Obj\x01\x04\x14avro.codec\x08null\x16avro.schema\x0a\x22int\x22\x00\x21\x0f\xc7\xbb\x81\x86\x39\xac\x48\xa4\xc6\xaf\xa2\xf1\x58\x1a\x00\x00")
-	option2 := []byte("Obj\x01\x04\x16avro.schema\x0a\x22int\x22\x14avro.codec\x08null\x00\x21\x0f\xc7\xbb\x81\x86\x39\xac\x48\xa4\xc6\xaf\xa2\xf1\x58\x1a\x00\x00")
+	option1 := []byte("Obj\x01\x14avro.codec\x08null\x16avro.schema\x0a\x22int\x22\x00\x21\x0f\xc7\xbb\x81\x86\x39\xac\x48\xa4\xc6\xaf\xa2\xf1\x58\x1a")
+	option2 := []byte("Obj\x01\x16avro.schema\x0a\x22int\x22\x14avro.codec\x08null\x00\x21\x0f\xc7\xbb\x81\x86\x39\xac\x48\xa4\xc6\xaf\xa2\xf1\x58\x1a")
 
 	actual := bb.Bytes()
 	if (bytes.Compare(actual, option1) != 0) && (bytes.Compare(actual, option2) != 0) {
@@ -111,27 +111,35 @@ func TestWriteHeaderCustomSync(t *testing.T) {
 
 func TestWriteWithNullCodec(t *testing.T) {
 	bb := new(bytes.Buffer)
-	func(w io.Writer) {
-		fw, err := NewWriter(ToWriter(w), WriterSchema(`"int"`), Sync(defaultSync))
-		if err != nil {
-			t.Fatalf("Actual: %#v; Expected: %#v", err, nil)
-		}
-		defer fw.Close()
+
+	fw, err := NewWriter(ToWriter(bb), WriterSchema(`"int"`), Sync(defaultSync))
+	if err != nil {
+		t.Fatalf("Actual: %#v; Expected: %#v", err, nil)
+	}
+
+	doing := func(fw *Writer) {
+		defer func() {
+			fw.Close()
+		}()
 		fw.Write(int32(13))
 		fw.Write(int32(42))
 		fw.Write(int32(54))
 		fw.Write(int32(99))
-	}(bb)
+	}
+	doing(fw)
+
+	<-fw.WriterDone // 必须等待才能写完，否则下面测试有并发错误，有时候过有时候不过
 	t.Logf("bb: %+v", bb.Bytes())
 
 	// NOTE: because key value pair ordering is indeterminate,
 	// there are two valid possibilities for the encoded map:
-	option1 := []byte("Obj\x01\x04\x14avro.codec\x08null\x16avro.schema\x0a\x22int\x22\x00" + string(defaultSync) + "\x08\x0a\x1a\x54\x6c\xc6\x01" + string(defaultSync) + "\x00\x00")
-	option2 := []byte("Obj\x01\x04\x16avro.schema\x0a\x22int\x22\x14avro.codec\x08null\x00" + string(defaultSync) + "\x08\x0a\x1a\x54\x6c\xc6\x01" + string(defaultSync) + "\x00\x00")
+	option1 := []byte("Obj\x01\x14avro.codec\x08null\x16avro.schema\x0a\x22int\x22\x00" + string(defaultSync) + "\x08\x0a\x1a\x54\x6c\xc6\x01" + string(defaultSync))
+	option2 := []byte("Obj\x01\x16avro.schema\x0a\x22int\x22\x14avro.codec\x08null\x00" + string(defaultSync) + "\x08\x0a\x1a\x54\x6c\xc6\x01" + string(defaultSync))
 
 	actual := bb.Bytes()
 	if (bytes.Compare(actual, option1) != 0) && (bytes.Compare(actual, option2) != 0) {
 		t.Errorf("Actual: %#v; Expected: %#v", actual, option1)
+		t.Errorf("Actual: %#v; Expected: %#v", actual, option2)
 	}
 }
 

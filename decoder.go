@@ -84,21 +84,11 @@ func booleanDecoder(r io.Reader) (interface{}, error) {
 }
 
 func intDecoder(r io.Reader) (interface{}, error) {
-	var v int
-	var err error
-	bb := make([]byte, 1)
-	for shift := uint(0); ; shift += 7 {
-		if _, err = r.Read(bb); err != nil {
-			return nil, newDecoderError("int", err)
-		}
-		b := bb[0]
-		v |= int(b&mask) << shift
-		if b&flag == 0 {
-			break
-		}
+	datum, err := longDecoder(r)
+	if err != nil {
+		return nil, err
 	}
-	datum := (int32(v>>1) ^ -int32(v&1))
-	return datum, nil
+	return int32(datum.(int64)), nil
 }
 
 func longDecoder(r io.Reader) (interface{}, error) {
