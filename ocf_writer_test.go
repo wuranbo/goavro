@@ -100,8 +100,8 @@ func TestWriteHeaderCustomSync(t *testing.T) {
 
 	// NOTE: because key value pair ordering is indeterminate,
 	// there are two valid possibilities for the encoded map:
-	option1 := []byte("Obj\x01\x14avro.codec\x08null\x16avro.schema\x0a\x22int\x22\x00\x21\x0f\xc7\xbb\x81\x86\x39\xac\x48\xa4\xc6\xaf\xa2\xf1\x58\x1a")
-	option2 := []byte("Obj\x01\x16avro.schema\x0a\x22int\x22\x14avro.codec\x08null\x00\x21\x0f\xc7\xbb\x81\x86\x39\xac\x48\xa4\xc6\xaf\xa2\xf1\x58\x1a")
+	option1 := []byte("Obj\x01\x04\x14avro.codec\x08null\x16avro.schema\x0a\x22int\x22\x00\x21\x0f\xc7\xbb\x81\x86\x39\xac\x48\xa4\xc6\xaf\xa2\xf1\x58\x1a")
+	option2 := []byte("Obj\x01\x04\x16avro.schema\x0a\x22int\x22\x14avro.codec\x08null\x00\x21\x0f\xc7\xbb\x81\x86\x39\xac\x48\xa4\xc6\xaf\xa2\xf1\x58\x1a")
 
 	actual := bb.Bytes()
 	if (bytes.Compare(actual, option1) != 0) && (bytes.Compare(actual, option2) != 0) {
@@ -133,8 +133,8 @@ func TestWriteWithNullCodec(t *testing.T) {
 
 	// NOTE: because key value pair ordering is indeterminate,
 	// there are two valid possibilities for the encoded map:
-	option1 := []byte("Obj\x01\x14avro.codec\x08null\x16avro.schema\x0a\x22int\x22\x00" + string(defaultSync) + "\x08\x0a\x1a\x54\x6c\xc6\x01" + string(defaultSync))
-	option2 := []byte("Obj\x01\x16avro.schema\x0a\x22int\x22\x14avro.codec\x08null\x00" + string(defaultSync) + "\x08\x0a\x1a\x54\x6c\xc6\x01" + string(defaultSync))
+	option1 := []byte("Obj\x01\x04\x14avro.codec\x08null\x16avro.schema\x0a\x22int\x22\x00" + string(defaultSync) + "\x08\x0a\x1a\x54\x6c\xc6\x01" + string(defaultSync))
+	option2 := []byte("Obj\x01\x04\x16avro.schema\x0a\x22int\x22\x14avro.codec\x08null\x00" + string(defaultSync) + "\x08\x0a\x1a\x54\x6c\xc6\x01" + string(defaultSync))
 
 	actual := bb.Bytes()
 	if (bytes.Compare(actual, option1) != 0) && (bytes.Compare(actual, option2) != 0) {

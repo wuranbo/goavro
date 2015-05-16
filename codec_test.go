@@ -364,7 +364,7 @@ func TestCodecEncoderUnionArray(t *testing.T) {
 func TestCodecEncoderUnionMap(t *testing.T) {
 	someMap := make(map[string]interface{})
 	someMap["superhero"] = "Batman"
-	checkCodecEncoderResult(t, `["null",{"type":"map","values":"string"}]`, someMap, []byte("\x02\x12superhero\x0cBatman\x00"))
+	checkCodecEncoderResult(t, `["null",{"type":"map","values":"string"}]`, someMap, []byte("\x02\x02\x12superhero\x0cBatman\x00"))
 }
 
 func TestCodecEncoderUnionRecord(t *testing.T) {
@@ -726,8 +726,8 @@ func TestCodecEncoderMapMetadataSchema(t *testing.T) {
 
 	// NOTE: because key value pair ordering is indeterminate,
 	// there are two valid possibilities for the encoded map:
-	option1 := []byte("\x14avro.codec\x08null\x16avro.schema\x0a\x22int\x22\x00")
-	option2 := []byte("\x16avro.schema\x0a\x22int\x22\x14avro.codec\x08null\x00")
+	option1 := []byte("\x04\x14avro.codec\x08null\x16avro.schema\x0a\x22int\x22\x00")
+	option2 := []byte("\x04\x16avro.schema\x0a\x22int\x22\x14avro.codec\x08null\x00")
 
 	bb := new(bytes.Buffer)
 	err := metadataCodec.Encode(bb, md)
