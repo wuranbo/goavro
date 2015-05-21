@@ -4,196 +4,6 @@
   "types": [
   {
     "type": "record",
-    "name": "DirectoryResource",
-    "fields": [
-    {
-      "name": "path",
-      "type": "string"
-    },
-    {
-      "name": "user",
-      "type": "string"
-    },
-    {
-      "name": "group",
-      "type": "string"
-    },
-    {
-      "name": "mode",
-      "type": "int"
-    },
-    {
-      "name": "bytes_free_warning_threshhold_bytes",
-      "type": "long"
-    }]
-  },
-  {
-    "type": "record",
-    "name": "FileResource",
-    "fields": [
-    {
-      "name": "path",
-      "type": "string"
-    },
-    {
-      "name": "error_message",
-      "type": ["null", "string"]
-    }]
-  },
-  {
-    "type": "record",
-    "name": "TcpListenResource",
-    "fields": [
-    {
-      "name": "bind_address",
-      "type": ["null", "string"]
-    },
-    {
-      "name": "port",
-      "type": "int"
-    }]
-  },
-  {
-    "type": "record",
-    "name": "CPUResource",
-    "fields": [
-    {
-      "name": "shares",
-      "type": "long"
-    }]
-  },
-  {
-    "type": "record",
-    "name": "NamedCPUResource",
-    "fields": [
-    {
-      "name": "name",
-      "type": "string"
-    },
-    {
-      "name": "user",
-      "type": "string"
-    },
-    {
-      "name": "group",
-      "type": "string"
-    },
-    {
-      "name": "mode",
-      "type": "int"
-    },
-    {
-      "name": "shares",
-      "type": "long"
-    }]
-  },
-  {
-    "type": "record",
-    "name": "IOResource",
-    "fields": [
-    {
-      "name": "weight",
-      "type": "long"
-    }]
-  },
-  {
-    "type": "record",
-    "name": "MemoryResource",
-    "fields": [
-    {
-      "name": "soft_limit",
-      "type": "long",
-      "default": -1
-    },
-    {
-      "name": "hard_limit",
-      "type": "long"
-    }]
-  },
-  {
-    "type": "record",
-    "name": "RLimitsResource",
-    "fields": [
-    {
-      "name": "limit_fds",
-      "type": ["null", "long"]
-    },
-    {
-      "name": "limit_memlock",
-      "type": ["null", "long"]
-    }]
-  },
-  {
-    "type": "record",
-    "name": "ResourceUnion",
-    "fields": [
-    {
-      "name": "dynamic",
-      "type": "boolean",
-      "default": false
-    },
-    {
-      "name": "directory",
-      "type": ["null", "DirectoryResource"]
-    },
-    {
-      "name": "file",
-      "type": ["null", "FileResource"]
-    },
-    {
-      "name": "tcp_listen",
-      "type": ["null", "TcpListenResource"]
-    },
-    {
-      "name": "cpu",
-      "type": ["null", "CPUResource"]
-    },
-    {
-      "name": "named_cpu",
-      "type": ["null", "NamedCPUResource"],
-      "default": null
-    },
-    {
-      "name": "io",
-      "type": ["null", "IOResource"]
-    },
-    {
-      "name": "memory",
-      "type": ["null", "MemoryResource"]
-    },
-    {
-      "name": "rlimits",
-      "type": ["null", "RLimitsResource"],
-      "default": null
-    }]
-  },
-  {
-    "type": "record",
-    "name": "SpecialFileInfo",
-    "fields": [
-    {
-      "name": "name",
-      "type": "string"
-    },
-    {
-      "name": "deploy_dir",
-      "type": "string"
-    },
-    {
-      "name": "user",
-      "type": "string"
-    },
-    {
-      "name": "group",
-      "type": "string"
-    },
-    {
-      "name": "permissions",
-      "type": "int"
-    }]
-  },
-  {
-    "type": "record",
     "name": "Process",
     "fields": [
     {
@@ -217,14 +27,6 @@
       }
     },
     {
-      "name": "status_links",
-      "type":
-      {
-        "type": "map",
-        "values": "string"
-      }
-    },
-    {
       "name": "running",
       "type": "boolean"
     },
@@ -233,8 +35,8 @@
       "type": "long"
     },
     {
-      "name": "one_off",
-      "type": "boolean"
+      "name" : "one_off",
+      "type" : "boolean"
     },
     {
       "name": "auto_restart",
@@ -261,117 +63,12 @@
       }
     },
     {
-      "name": "resources",
-      "type":
-      {
-        "type": "array",
-        "items": "ResourceUnion"
-      }
-    },
-    {
-      "name": "refresh_files",
-      "type":
-      {
-        "type": "array",
-        "items": "string"
-      }
-    },
-    {
-      "name": "config_generation",
-      "type": "long"
-    },
-    {
-      "name": "special_file_info",
-      "type":
-      {
-        "type": "array",
-        "items": "SpecialFileInfo"
-      }
-    },
-    {
       "name": "parcels",
       "type":
       {
         "type": "map",
         "values": "string"
       }
-    },
-    {
-      "name": "required_tags",
-      "type":
-      {
-        "type": "array",
-        "items": "string"
-      },
-      "default": []
-    },
-    {
-      "name": "optional_tags",
-      "type":
-      {
-        "type": "array",
-        "items": "string"
-      },
-      "default": []
-    }]
-  },
-  {
-    "type": "record",
-    "name": "ClientConfigData",
-    "fields": [
-    {
-      "name": "rolename",
-      "type": "string"
-    },
-    {
-      "name": "alt_link",
-      "type": "string"
-    },
-    {
-      "name": "alt_name",
-      "type": "string"
-    },
-    {
-      "name": "path",
-      "type": "string"
-    }]
-  },
-  {
-    "type": "record",
-    "name": "FirehoseConnectionData",
-    "fields": [
-    {
-      "name": "rolename",
-      "type": "string"
-    },
-    {
-      "name": "roletype",
-      "type": "string"
-    },
-    {
-      "name": "address",
-      "type": "string"
-    },
-    {
-      "name": "port",
-      "type": "int"
-    },
-    {
-      "name": "report_interval",
-      "type": "int"
-    }]
-  },
-  {
-    "type": "record",
-    "name": "AgentHostCollectionConfigData",
-    "fields": [
-    {
-      "name": "config_name",
-      "type": "string"
-    },
-    {
-      "name": "config_value",
-      "type": "string"
     }]
   },
   {
@@ -393,41 +90,6 @@
         "type": "array",
         "items": "Process"
       }
-    },
-    {
-      "name": "client_configs",
-      "type":
-      {
-        "type": "array",
-        "items": "ClientConfigData"
-      },
-      "default": []
-    },
-    {
-      "name": "firehoses",
-      "type":
-      {
-        "type": "array",
-        "items": "FirehoseConnectionData"
-      }
-    },
-    {
-      "name": "enabled_metric_reporters",
-      "type":
-      {
-        "type": "array",
-        "items": "string"
-      },
-      "default": []
-    },
-    {
-      "name": "host_collection_config_data",
-      "type":
-      {
-        "type": "array",
-        "items": "AgentHostCollectionConfigData"
-      },
-      "default": []
     },
     {
       "name": "parcels_directory",
@@ -461,28 +123,12 @@
       "default": true
     },
     {
-      "name": "rm_enabled",
-      "type": "boolean"
-    },
-    {
       "name": "server_managed_parcels",
       "type":
       {
         "type": "array",
         "items": "string"
       }
-    },
-    {
-      "name": "log_tailing_config",
-      "type": "string"
-    },
-    {
-      "name": "eventserver_host",
-      "type": ["null", "string"]
-    },
-    {
-      "name": "eventserver_port",
-      "type": ["null", "int"]
     }]
   },
   {
@@ -500,16 +146,6 @@
     {
       "name": "last_request_hash",
       "type": "bytes"
-    },
-    {
-      "name": "ts_recv",
-      "type": "long",
-      "default": -1
-    },
-    {
-      "name": "ts_send",
-      "type": "long",
-      "default": -1
     }]
   },
   {
@@ -535,11 +171,6 @@
     {
       "name": "exit_code",
       "type": "int"
-    },
-    {
-      "name": "cm_status_code",
-      "type": "string",
-      "default": "STATUS_NONE"
     },
     {
       "name": "run_generation",
@@ -617,157 +248,6 @@
     }]
   },
   {
-    "type": "enum",
-    "name": "CDHVersion",
-    "symbols": ["CDH3", "CDH4", "CDH5", "NO_VERSION_FILE", "BAD_VERSION_FILE", "NO_SCRIPT", "NOT_APPLICABLE"]
-  },
-  {
-    "type": "enum",
-    "name": "ComponentInfoSource",
-    "symbols": ["UNKNOWN", "PACKAGE", "PARCEL", "SYSTEM"]
-  },
-  {
-    "type": "record",
-    "name": "ComponentInfo",
-    "fields": [
-    {
-      "name": "name",
-      "type": "string"
-    },
-    {
-      "name": "cdh_version",
-      "type": "CDHVersion"
-    },
-    {
-      "name": "cdh_release",
-      "type": "string",
-      "default": ""
-    },
-    {
-      "name": "component_version",
-      "type": "string"
-    },
-    {
-      "name": "component_release",
-      "type": "string",
-      "default": ""
-    },
-    {
-      "name": "source",
-      "type": "ComponentInfoSource",
-      "default": "UNKNOWN"
-    },
-    {
-      "name": "active",
-      "type": "boolean",
-      "default": true
-    }]
-  },
-  {
-    "type": "record",
-    "name": "ParcelComponentInfo",
-    "fields": [
-    {
-      "name": "name",
-      "type": "string"
-    },
-    {
-      "name": "version",
-      "type": "string"
-    }]
-  },
-  {
-    "type": "record",
-    "name": "ParcelUserInfo",
-    "fields": [
-    {
-      "name": "longname",
-      "type": "string"
-    },
-    {
-      "name": "home",
-      "type": "string"
-    },
-    {
-      "name": "shell",
-      "type": "string"
-    },
-    {
-      "name": "extra_groups",
-      "type":
-      {
-        "type": "array",
-        "items": "string"
-      }
-    }]
-  },
-  {
-    "type": "record",
-    "name": "ParcelInfo",
-    "fields": [
-    {
-      "name": "name",
-      "type": "string"
-    },
-    {
-      "name": "version",
-      "type": "string"
-    },
-    {
-      "name": "setActiveSymlink",
-      "type": "boolean"
-    },
-    {
-      "name": "components",
-      "type":
-      {
-        "type": "array",
-        "items": "ParcelComponentInfo"
-      }
-    },
-    {
-      "name": "packages",
-      "type":
-      {
-        "type": "array",
-        "items": "ParcelComponentInfo"
-      }
-    },
-    {
-      "name": "provides",
-      "type": ["null",
-      {
-        "type": "array",
-        "items": "string"
-      }],
-      "default": null
-    },
-    {
-      "name": "users",
-      "type":
-      {
-        "type": "map",
-        "values": "ParcelUserInfo"
-      }
-    },
-    {
-      "name": "groups",
-      "type":
-      {
-        "type": "array",
-        "items": "string"
-      }
-    },
-    {
-      "name": "scripts",
-      "type":
-      {
-        "type": "map",
-        "values": "string"
-      }
-    }]
-  },
-  {
     "type": "record",
     "name": "Distro",
     "fields": [
@@ -794,73 +274,6 @@
     },
     {
       "name": "msg",
-      "type": "string"
-    }]
-  },
-  {
-    "type": "record",
-    "name": "CGroupCaps",
-    "fields": [
-    {
-      "name": "has_blkio",
-      "type": "boolean"
-    },
-    {
-      "name": "has_cpu",
-      "type": "boolean"
-    },
-    {
-      "name": "has_cpuacct",
-      "type": "boolean",
-      "default": false
-    },
-    {
-      "name": "has_memory",
-      "type": "boolean"
-    },
-    {
-      "name": "default_blkio_weight",
-      "type": "long"
-    },
-    {
-      "name": "default_cpu_shares",
-      "type": "long"
-    },
-    {
-      "name": "default_cpu_rt_runtime_us",
-      "type": "long",
-      "default": -1
-    },
-    {
-      "name": "default_memory_limit_in_bytes",
-      "type": "long"
-    },
-    {
-      "name": "default_memory_soft_limit_in_bytes",
-      "type": "long",
-      "default": -1
-    },
-    {
-      "name": "writable_cgroup_dot_procs",
-      "type": "boolean"
-    }]
-  },
-  {
-    "type": "record",
-    "name": "CloudStatus",
-    "fields": [
-    {
-      "name": "public_host_name",
-      "type": ["null", "string"],
-      "default": null
-    },
-    {
-      "name": "public_ip_address",
-      "type": ["null", "string"],
-      "default": null
-    },
-    {
-      "name": "cloud_provider",
       "type": "string"
     }]
   },
@@ -905,15 +318,6 @@
       "default": "Default Random Token"
     },
     {
-      "name": "component_info",
-      "type":
-      {
-        "type": "array",
-        "items": "ComponentInfo"
-      },
-      "default": []
-    },
-    {
       "name": "parcels_directory",
       "type": "string",
       "default": ""
@@ -928,10 +332,9 @@
       "type":
       {
         "type": "map",
-        "values":
-        {
-          "type": "map",
-          "values": "ParcelInfo"
+        "values" : {
+          "items": "string",
+          "type": "array"
         }
       },
       "default":
@@ -963,16 +366,6 @@
     {
       "name": "distro_info",
       "type": ["null", "Distro"],
-      "default": null
-    },
-    {
-      "name": "cgroup_capabilities",
-      "type": ["null", "CGroupCaps"],
-      "default": null
-    },
-    {
-      "name": "cloud_status",
-      "type": ["null", "CloudStatus"],
       "default": null
     },
     {

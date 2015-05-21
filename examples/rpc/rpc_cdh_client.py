@@ -22,7 +22,7 @@ import httplib
 import avro.ipc as ipc
 import avro.protocol as protocol
 
-PROTOCOL = protocol.parse(open("agent.avsc").read())
+PROTOCOL = protocol.parse(open("Agent.avsc").read())
 
 server_addr = ('localhost', 8888)
 

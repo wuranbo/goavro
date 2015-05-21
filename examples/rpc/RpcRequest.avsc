@@ -30,6 +30,7 @@
         {
           "type": "record",
           "name": "HeartbeatStatus",
+          "namespace": "com.cloudera.cmf.protocol",
           "fields": [
           {
             "name": "host",
@@ -37,6 +38,7 @@
             {
               "type": "record",
               "name": "HostStatus",
+              "namespace": "com.cloudera.cmf.protocol",
               "fields": [
               {
                 "name": "host_name",
@@ -97,62 +99,6 @@
                 "default": "Default Random Token"
               },
               {
-                "name": "component_info",
-                "type":
-                {
-                  "type": "array",
-                  "items":
-                  {
-                    "type": "record",
-                    "name": "ComponentInfo",
-                    "fields": [
-                    {
-                      "name": "name",
-                      "type": "string"
-                    },
-                    {
-                      "name": "cdh_version",
-                      "type":
-                      {
-                        "type": "enum",
-                        "name": "CDHVersion",
-                        "symbols": ["CDH3", "CDH4", "CDH5", "NO_VERSION_FILE", "BAD_VERSION_FILE", "NO_SCRIPT", "NOT_APPLICABLE"]
-                      }
-                    },
-                    {
-                      "name": "cdh_release",
-                      "type": "string",
-                      "default": ""
-                    },
-                    {
-                      "name": "component_version",
-                      "type": "string"
-                    },
-                    {
-                      "name": "component_release",
-                      "type": "string",
-                      "default": ""
-                    },
-                    {
-                      "name": "source",
-                      "type":
-                      {
-                        "type": "enum",
-                        "name": "ComponentInfoSource",
-                        "symbols": ["UNKNOWN", "PACKAGE", "PARCEL", "SYSTEM"]
-                      },
-                      "default": "UNKNOWN"
-                    },
-                    {
-                      "name": "active",
-                      "type": "boolean",
-                      "default": true
-                    }]
-                  }
-                },
-                "default": []
-              },
-              {
                 "name": "parcels_directory",
                 "type": "string",
                 "default": ""
@@ -169,127 +115,8 @@
                   "type": "map",
                   "values":
                   {
-                    "type": "map",
-                    "values":
-                    {
-                      "type": "record",
-                      "name": "ParcelInfo",
-                      "fields": [
-                      {
-                        "name": "name",
-                        "type": "string"
-                      },
-                      {
-                        "name": "version",
-                        "type": "string"
-                      },
-                      {
-                        "name": "setActiveSymlink",
-                        "type": "boolean"
-                      },
-                      {
-                        "name": "components",
-                        "type":
-                        {
-                          "type": "array",
-                          "items":
-
-                          {
-                            "type": "record",
-                            "name": "ParcelComponentInfo",
-                            "fields": [
-                            {
-                              "name": "name",
-                              "type": "string"
-                            },
-                            {
-                              "name": "version",
-                              "type": "string"
-                            }]
-                          }
-                        }
-                      },
-                      {
-                        "name": "packages",
-                        "type":
-                        {
-                          "type": "array",
-                          "items":
-
-                          {
-                            "type": "record",
-                            "name": "ParcelComponentInfo",
-                            "fields": [
-                            {
-                              "name": "name",
-                              "type": "string"
-                            },
-                            {
-                              "name": "version",
-                              "type": "string"
-                            }]
-                          }
-                        }
-                      },
-                      {
-                        "name": "provides",
-                        "type": ["null",
-                        {
-                          "type": "array",
-                          "items": "string"
-                        }],
-                        "default": null
-                      },
-                      {
-                        "name": "users",
-                        "type":
-                        {
-                          "type": "map",
-                          "values":
-                          {
-                            "type": "record",
-                            "name": "ParcelUserInfo",
-                            "fields": [
-                            {
-                              "name": "longname",
-                              "type": "string"
-                            },
-                            {
-                              "name": "home",
-                              "type": "string"
-                            },
-                            {
-                              "name": "shell",
-                              "type": "string"
-                            },
-                            {
-                              "name": "extra_groups",
-                              "type":
-                              {
-                                "type": "array",
-                                "items": "string"
-                              }
-                            }]
-                          }
-                        }
-                      },
-                      {
-                        "name": "groups",
-                        "type":
-                        {
-                          "type": "array",
-                          "items": "string"
-                        }
-                      },
-                      {
-                        "name": "scripts",
-                        "type":
-                        {
-                          "type": "map",
-                          "values": "string"
-                        }
-                      }]
-                    }
+                    "items": "string",
+                    "type": "array"
                   }
                 },
                 "default":
@@ -354,83 +181,6 @@
                 "default": null
               },
               {
-                "name": "cgroup_capabilities",
-                "type": ["null",
-                {
-                  "type": "record",
-                  "name": "CGroupCaps",
-                  "fields": [
-                  {
-                    "name": "has_blkio",
-                    "type": "boolean"
-                  },
-                  {
-                    "name": "has_cpu",
-                    "type": "boolean"
-                  },
-                  {
-                    "name": "has_cpuacct",
-                    "type": "boolean",
-                    "default": false
-                  },
-                  {
-                    "name": "has_memory",
-                    "type": "boolean"
-                  },
-                  {
-                    "name": "default_blkio_weight",
-                    "type": "long"
-                  },
-                  {
-                    "name": "default_cpu_shares",
-                    "type": "long"
-                  },
-                  {
-                    "name": "default_cpu_rt_runtime_us",
-                    "type": "long",
-                    "default": -1
-                  },
-                  {
-                    "name": "default_memory_limit_in_bytes",
-                    "type": "long"
-                  },
-                  {
-                    "name": "default_memory_soft_limit_in_bytes",
-                    "type": "long",
-                    "default": -1
-                  },
-                  {
-                    "name": "writable_cgroup_dot_procs",
-                    "type": "boolean"
-                  }]
-                }],
-                "default": null
-              },
-              {
-                "name": "cloud_status",
-                "type": ["null",
-                {
-                  "type": "record",
-                  "name": "CloudStatus",
-                  "fields": [
-                  {
-                    "name": "public_host_name",
-                    "type": ["null", "string"],
-                    "default": null
-                  },
-                  {
-                    "name": "public_ip_address",
-                    "type": ["null", "string"],
-                    "default": null
-                  },
-                  {
-                    "name": "cloud_provider",
-                    "type": "string"
-                  }]
-                }],
-                "default": null
-              },
-              {
                 "name": "agent_system_user",
                 "type": ["null", "string"],
                 "default": null
@@ -450,51 +200,72 @@
               "items":
               {
                 "type": "record",
-                "name": "ProcessStatus",
+                "name": "Process",
+                "namespace": "com.cloudera.cmf.protocol",
                 "fields": [
+                {
+                  "name": "id",
+                  "type": "long"
+                },
                 {
                   "name": "name",
                   "type": "string"
                 },
                 {
-                  "name": "status",
+                  "name": "program",
                   "type": "string"
                 },
                 {
-                  "name": "stdout_tail",
-                  "type": "string"
+                  "name": "arguments",
+                  "type":
+                  {
+                    "type": "array",
+                    "items": "string"
+                  }
                 },
                 {
-                  "name": "stderr_tail",
-                  "type": "string"
-                },
-                {
-                  "name": "exit_code",
-                  "type": "int"
-                },
-                {
-                  "name": "cm_status_code",
-                  "type": "string",
-                  "default": "STATUS_NONE"
+                  "name": "running",
+                  "type": "boolean"
                 },
                 {
                   "name": "run_generation",
                   "type": "long"
                 },
                 {
-                  "name": "pid",
-                  "type": "int",
-                  "default": -1
+                  "name": "one_off",
+                  "type": "boolean"
                 },
                 {
-                  "name": "parcels_in_use",
+                  "name": "auto_restart",
+                  "type": "boolean"
+                },
+                {
+                  "name": "user",
+                  "type": "string"
+                },
+                {
+                  "name": "group",
+                  "type": "string"
+                },
+                {
+                  "name": "configuration_data",
+                  "type": "bytes"
+                },
+                {
+                  "name": "environment",
                   "type":
                   {
                     "type": "map",
                     "values": "string"
-                  },
-                  "default":
-                  {}
+                  }
+                },
+                {
+                  "name": "parcels",
+                  "type":
+                  {
+                    "type": "map",
+                    "values": "string"
+                  }
                 }]
               }
             }
@@ -511,6 +282,7 @@
         {
           "type": "record",
           "name": "HostStats",
+          "namespace": "com.cloudera.cmf.protocol",
           "fields": [
           {
             "name": "load_avg",

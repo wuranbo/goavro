@@ -13,6 +13,7 @@
     {
       "type": "record",
       "name": "HeartbeatResponseData",
+      "namespace": "com.cloudera.cmf.protocol",
       "fields": [
       {
         "name": "host_id",
@@ -54,14 +55,6 @@
               }
             },
             {
-              "name": "status_links",
-              "type":
-              {
-                "type": "map",
-                "values": "string"
-              }
-            },
-            {
               "name": "running",
               "type": "boolean"
             },
@@ -98,348 +91,15 @@
               }
             },
             {
-              "name": "resources",
-              "type":
-              {
-                "type": "array",
-                "items":
-                {
-                  "type": "record",
-                  "name": "ResourceUnion",
-                  "fields": [
-                  {
-                    "name": "dynamic",
-                    "type": "boolean",
-                    "default": false
-                  },
-                  {
-                    "name": "directory",
-                    "type": ["null",
-                    {
-                      "type": "record",
-                      "name": "DirectoryResource",
-                      "fields": [
-                      {
-                        "name": "path",
-                        "type": "string"
-                      },
-                      {
-                        "name": "user",
-                        "type": "string"
-                      },
-                      {
-                        "name": "group",
-                        "type": "string"
-                      },
-                      {
-                        "name": "mode",
-                        "type": "int"
-                      },
-                      {
-                        "name": "bytes_free_warning_threshhold_bytes",
-                        "type": "long"
-                      }]
-                    }]
-                  },
-                  {
-                    "name": "file",
-                    "type": ["null",
-                    {
-                      "type": "record",
-                      "name": "FileResource",
-                      "fields": [
-                      {
-                        "name": "path",
-                        "type": "string"
-                      },
-                      {
-                        "name": "error_message",
-                        "type": ["null", "string"]
-                      }]
-                    }]
-                  },
-                  {
-                    "name": "tcp_listen",
-                    "type": ["null",
-                    {
-                      "type": "record",
-                      "name": "TcpListenResource",
-                      "fields": [
-                      {
-                        "name": "bind_address",
-                        "type": ["null", "string"]
-                      },
-                      {
-                        "name": "port",
-                        "type": "int"
-                      }]
-                    }]
-                  },
-                  {
-                    "name": "cpu",
-                    "type": ["null",
-                    {
-                      "type": "record",
-                      "name": "CPUResource",
-                      "fields": [
-                      {
-                        "name": "shares",
-                        "type": "long"
-                      }]
-                    }]
-                  },
-                  {
-                    "name": "named_cpu",
-                    "type": ["null",
-                    {
-                      "type": "record",
-                      "name": "NamedCPUResource",
-                      "fields": [
-                      {
-                        "name": "name",
-                        "type": "string"
-                      },
-                      {
-                        "name": "user",
-                        "type": "string"
-                      },
-                      {
-                        "name": "group",
-                        "type": "string"
-                      },
-                      {
-                        "name": "mode",
-                        "type": "int"
-                      },
-                      {
-                        "name": "shares",
-                        "type": "long"
-                      }]
-                    }],
-                    "default": null
-                  },
-                  {
-                    "name": "io",
-                    "type": ["null",
-                    {
-                      "type": "record",
-                      "name": "IOResource",
-                      "namespace": "com.cloudera.cmf.protocol",
-                      "fields": [
-                      {
-                        "name": "weight",
-                        "type": "long"
-                      }]
-                    }]
-                  },
-                  {
-                    "name": "memory",
-                    "type": ["null",
-                    {
-                      "type": "record",
-                      "name": "MemoryResource",
-                      "namespace": "com.cloudera.cmf.protocol",
-                      "fields": [
-                      {
-                        "name": "soft_limit",
-                        "type": "long",
-                        "default": -1
-                      },
-                      {
-                        "name": "hard_limit",
-                        "type": "long"
-                      }]
-                    }]
-                  },
-                  {
-                    "name": "rlimits",
-                    "type": ["null",
-                    {
-                      "type": "record",
-                      "name": "RLimitsResource",
-                      "namespace": "com.cloudera.cmf.protocol",
-                      "fields": [
-                      {
-                        "name": "limit_fds",
-                        "type": ["null", "long"]
-                      },
-                      {
-                        "name": "limit_memlock",
-                        "type": ["null", "long"]
-                      }]
-                    }],
-                    "default": null
-                  }]
-                }
-              }
-            },
-            {
-              "name": "refresh_files",
-              "type":
-              {
-                "type": "array",
-                "items": "string"
-              }
-            },
-            {
-              "name": "config_generation",
-              "type": "long"
-            },
-            {
-              "name": "special_file_info",
-              "type":
-              {
-                "type": "array",
-                "items":
-                {
-                  "type": "record",
-                  "name": "SpecialFileInfo",
-                  "fields": [
-                  {
-                    "name": "name",
-                    "type": "string"
-                  },
-                  {
-                    "name": "deploy_dir",
-                    "type": "string"
-                  },
-                  {
-                    "name": "user",
-                    "type": "string"
-                  },
-                  {
-                    "name": "group",
-                    "type": "string"
-                  },
-                  {
-                    "name": "permissions",
-                    "type": "int"
-                  }]
-                }
-              }
-            },
-            {
               "name": "parcels",
               "type":
               {
                 "type": "map",
                 "values": "string"
               }
-            },
-            {
-              "name": "required_tags",
-              "type":
-              {
-                "type": "array",
-                "items": "string"
-              },
-              "default": []
-            },
-            {
-              "name": "optional_tags",
-              "type":
-              {
-                "type": "array",
-                "items": "string"
-              },
-              "default": []
             }]
           }
         }
-      },
-      {
-        "name": "client_configs",
-        "type":
-        {
-          "type": "array",
-          "items":
-          {
-            "type": "record",
-            "name": "ClientConfigData",
-            "fields": [
-            {
-              "name": "rolename",
-              "type": "string"
-            },
-            {
-              "name": "alt_link",
-              "type": "string"
-            },
-            {
-              "name": "alt_name",
-              "type": "string"
-            },
-            {
-              "name": "path",
-              "type": "string"
-            }]
-          }
-        },
-        "default": []
-      },
-      {
-        "name": "firehoses",
-        "type":
-        {
-          "type": "array",
-          "items":
-          {
-            "type": "record",
-            "name": "FirehoseConnectionData",
-            "fields": [
-            {
-              "name": "rolename",
-              "type": "string"
-            },
-            {
-              "name": "roletype",
-              "type": "string"
-            },
-            {
-              "name": "address",
-              "type": "string"
-            },
-            {
-              "name": "port",
-              "type": "int"
-            },
-            {
-              "name": "report_interval",
-              "type": "int"
-            }]
-          }
-        }
-      },
-      {
-        "name": "enabled_metric_reporters",
-        "type":
-        {
-          "type": "array",
-          "items": "string"
-        },
-        "default": []
-      },
-      {
-        "name": "host_collection_config_data",
-        "type":
-        {
-          "type": "array",
-          "items":
-          {
-            "type": "record",
-            "name": "AgentHostCollectionConfigData",
-            "fields": [
-            {
-              "name": "config_name",
-              "type": "string"
-            },
-            {
-              "name": "config_value",
-              "type": "string"
-            }]
-          }
-        },
-        "default": []
       },
       {
         "name": "parcels_directory",
@@ -473,43 +133,17 @@
         "default": true
       },
       {
-        "name": "rm_enabled",
-        "type": "boolean"
-      },
-      {
         "name": "server_managed_parcels",
         "type":
         {
           "type": "array",
           "items": "string"
         }
-      },
-      {
-        "name": "log_tailing_config",
-        "type": "string"
-      },
-      {
-        "name": "eventserver_host",
-        "type": ["null", "string"]
-      },
-      {
-        "name": "eventserver_port",
-        "type": ["null", "int"]
       }]
     }]
   },
   {
     "name": "last_request_hash",
     "type": "bytes"
-  },
-  {
-    "name": "ts_recv",
-    "type": "long",
-    "default": -1
-  },
-  {
-    "name": "ts_send",
-    "type": "long",
-    "default": -1
   }]
 }
