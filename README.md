@@ -2,6 +2,7 @@
 
 ## 变动
 
+* 修正了[linkedin/goavro](https://github.com/linkedin/goavro)的bug。包括但不限于这些[Pull Request](https://github.com/linkedin/goavro/pulls?q=author%3Awuranbo+is%3Apr)，时间紧张只有quick dirty的修正，原作者也都认可这些fix。(嗯，但他也挺忙了也没空改个更好的出来。)。
 * 修改了一个基于能和apache/avro python的1.7.7版本的简化ipc，去掉了握手的过程。
 * 根据简化的py的ipc添加了go的ipc, 例子在 example/ipc中
 
